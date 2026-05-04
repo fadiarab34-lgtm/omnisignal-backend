@@ -1,0 +1,32 @@
+{
+  "name": "omnisignal",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Production full-stack trading intelligence platform with live market data, wallet auth, AI analysis, voice, portfolio simulation, and Hyperliquid trading controls.",
+  "packageManager": "pnpm@9.12.3",
+  "engines": {
+    "node": ">=20.11.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "test:e2e": "pnpm --filter @omnisignal/web test:e2e",
+    "db:generate": "pnpm --filter @omnisignal/api prisma:generate",
+    "db:migrate": "pnpm --filter @omnisignal/api prisma:migrate",
+    "no-mocks:audit": "! rg -n \"mock|fake|sample|placeholder|hardcoded\" apps packages --glob '!**/*.test.ts' --glob '!**/*.spec.ts' --glob '!**/node_modules/**' --glob '!**/dist/**' --glob '!**/.next/**' --glob '!**/test-results/**' --glob '!**/*.tsbuildinfo'"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.1",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}

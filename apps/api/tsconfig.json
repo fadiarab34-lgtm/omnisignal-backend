@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "types": ["node"],
+    "baseUrl": "../..",
+    "paths": {
+      "@omnisignal/shared": ["packages/shared/dist/index.d.ts"],
+      "@omnisignal/shared/*": ["packages/shared/dist/*"],
+      "@omnisignal/market-connectors": ["packages/market-connectors/dist/index.d.ts"],
+      "@omnisignal/market-connectors/*": ["packages/market-connectors/dist/*"],
+      "@omnisignal/trading": ["packages/trading/dist/index.d.ts"],
+      "@omnisignal/trading/*": ["packages/trading/dist/*"],
+      "@omnisignal/ai": ["packages/ai/dist/index.d.ts"],
+      "@omnisignal/ai/*": ["packages/ai/dist/*"]
+    }
+  },
+  "include": ["src/**/*.ts"]
+}

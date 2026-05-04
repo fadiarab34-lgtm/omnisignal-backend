@@ -217,3 +217,89 @@ Flow:
 5. Backend submits to Hyperliquid testnet and stores the response.
 
 Mainnet remains disabled unless `ENABLE_MAINNET_TRADING=true` and `TRADING_MODE=mainnet`.
+
+## Running Tests
+
+```bash
+pnpm test
+pnpm test:e2e
+```
+
+External provider behavior is isolated in tests. Production source does not contain fallback market data or generated AI text.
+
+## Deployment
+
+### Frontend: Vercel
+
+- Root: `apps/web`
+- Build: `pnpm build`
+- Output: `.next`
+- Set `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_WS_URL`.
+
+### Backend: Render, Railway, Fly.io, or ECS
+
+- Root: `apps/api`
+- Build: `pnpm build`
+- Start: `pnpm start`
+- Migration: `pnpm prisma:migrate`
+- Enable WebSocket support.
+- Set all backend environment variables.
+
+### Database
+
+Use Supabase, Neon, Railway Postgres, RDS, or another managed PostgreSQL. Run Prisma migrations during release.
+
+### Redis
+
+Use Upstash, Railway Redis, Elasticache, or another managed Redis. Ensure BullMQ workers can maintain long-lived connections.
+
+## Provider Health Checks
+
+The settings portal shows:
+
+- Database
+- Redis
+- OpenAI
+- AI voice
+- Twelve Data
+- Finnhub
+- CoinGecko
+- Alpha Vantage
+- Hyperliquid
+- Wallet Premium payment
+- Telegram AI
+
+Missing key: `Missing configuration`.  
+Provider failure: `Provider unavailable`.
+
+## Trading Safety Model
+
+- No frontend order placement.
+- No voice-only execution.
+- `DISABLE_TRADING=true` blocks real placement.
+- Mainnet disabled unless explicitly enabled.
+- Every order intent and execution response is stored.
+- Every trading action writes an audit log.
+- Hyperliquid testnet is required before mainnet enablement.
+
+## No Substituted Data Policy
+
+Visible production values must come from:
+
+1. provider APIs,
+2. user-created database records,
+3. backend calculations from provider data,
+4. explicitly labeled simulation using live prices.
+
+If a provider is missing or down, OmniSignal shows an empty, loading, error, or unavailable state.
+
+## Troubleshooting
+
+- Portfolio is hidden: connect MetaMask and sign the nonce.
+- Heatmap unavailable: configure at least one relevant provider key.
+- AI unavailable: set `OPENAI_API_KEY`.
+- Voice unavailable: set `OPENAI_API_KEY` and `OPENAI_REALTIME_MODEL`, and allow microphone permissions.
+- Hyperliquid estimate unavailable: configure Hyperliquid endpoints and fee bps.
+- Testnet confirmation blocked: set `DISABLE_TRADING=false`, `TRADING_MODE=testnet`, and provide an agent key.
+- Premium payment unavailable: configure the treasury wallet, token contract, chain id, and `EVM_RPC_URL`.
+- Telegram AI unavailable: configure Telegram bot token, username, and webhook secret.

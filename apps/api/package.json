@@ -1,0 +1,41 @@
+{
+  "name": "@omnisignal/api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "prisma generate && tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:dev": "prisma migrate dev"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.2",
+    "@fastify/jwt": "^9.0.2",
+    "@fastify/rate-limit": "^10.2.1",
+    "@fastify/websocket": "^11.0.1",
+    "@omnisignal/ai": "workspace:*",
+    "@omnisignal/market-connectors": "workspace:*",
+    "@omnisignal/shared": "workspace:*",
+    "@omnisignal/trading": "workspace:*",
+    "@prisma/client": "^6.1.0",
+    "bullmq": "^5.34.2",
+    "ethers": "^6.13.5",
+    "fastify": "^5.2.1",
+    "ioredis": "^5.4.2",
+    "prisma": "^6.1.0",
+    "tsx": "^4.19.2",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}

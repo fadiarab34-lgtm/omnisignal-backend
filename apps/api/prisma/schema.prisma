@@ -1,0 +1,386 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PortfolioMode {
+  simulation
+  imported
+  trading
+}
+
+enum AssetClass {
+  equity
+  crypto
+  forex
+  commodity
+  index
+  etf
+  perp
+}
+
+enum TransactionType {
+  buy
+  sell
+  rebalance
+  deposit
+  withdrawal
+}
+
+enum OrderSide {
+  buy
+  sell
+}
+
+enum OrderType {
+  market
+  limit
+}
+
+enum TradingMode {
+  simulation
+  testnet
+  mainnet
+}
+
+enum ProviderStatusValue {
+  healthy
+  degraded
+  down
+  missing_config
+}
+
+model User {
+  id             String                @id @default(uuid())
+  email          String?               @unique
+  wallets        Wallet[]
+  portfolios     Portfolio[]
+  aiSignals      AISignal[]
+  aiNudges       AINudge[]
+  orderIntents   OrderIntent[]
+  simulations    Simulation[]
+  payments       Payment[]
+  subscriptions  PremiumSubscription[]
+  messagingLinks MessagingLink[]
+  auditLogs      AuditLog[]
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+}
+
+model Wallet {
+  id             String                @id @default(uuid())
+  userId         String
+  user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address        String
+  chainId        String?
+  verifiedAt     DateTime
+  subscriptions  PremiumSubscription[]
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  @@unique([address])
+  @@index([userId])
+}
+
+model WalletNonce {
+  id            String    @id @default(uuid())
+  walletAddress String
+  nonce         String    @unique
+  expiresAt     DateTime
+  usedAt        DateTime?
+  createdAt     DateTime  @default(now())
+
+  @@index([walletAddress])
+  @@index([expiresAt])
+}
+
+model Portfolio {
+  id                 String              @id @default(uuid())
+  userId             String
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  walletAddress      String
+  name               String
+  mode               PortfolioMode
+  totalValue         Decimal             @default(0) @db.Decimal(28, 10)
+  dailyChangeAmount  Decimal             @default(0) @db.Decimal(28, 10)
+  dailyChangePercent Decimal             @default(0) @db.Decimal(18, 8)
+  riskScore          Decimal?            @db.Decimal(8, 4)
+  positions          Position[]
+  snapshots          PortfolioSnapshot[]
+  transactions       Transaction[]
+  simulations        Simulation[]
+  aiSignals          AISignal[]
+  aiNudges           AINudge[]
+  orderIntents       OrderIntent[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([userId])
+  @@index([walletAddress])
+}
+
+model Position {
+  id                   String        @id @default(uuid())
+  portfolioId          String
+  portfolio            Portfolio     @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  symbol               String
+  name                 String
+  assetClass           AssetClass
+  provider             String
+  quantity             Decimal       @db.Decimal(28, 10)
+  avgCost              Decimal       @db.Decimal(28, 10)
+  currentPrice         Decimal       @default(0) @db.Decimal(28, 10)
+  marketValue          Decimal       @default(0) @db.Decimal(28, 10)
+  allocationPercent    Decimal       @default(0) @db.Decimal(18, 8)
+  unrealizedPnl        Decimal       @default(0) @db.Decimal(28, 10)
+  unrealizedPnlPercent Decimal       @default(0) @db.Decimal(18, 8)
+  dailyChangePercent   Decimal       @default(0) @db.Decimal(18, 8)
+  transactions         Transaction[]
+  updatedAt            DateTime      @updatedAt
+
+  @@unique([portfolioId, symbol])
+  @@index([symbol])
+}
+
+model PortfolioSnapshot {
+  id                 String    @id @default(uuid())
+  portfolioId        String
+  portfolio          Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  totalValue         Decimal   @db.Decimal(28, 10)
+  dailyChangeAmount  Decimal   @db.Decimal(28, 10)
+  dailyChangePercent Decimal   @db.Decimal(18, 8)
+  positionsJson      Json
+  createdAt          DateTime  @default(now())
+
+  @@index([portfolioId, createdAt])
+}
+
+model Transaction {
+  id          String          @id @default(uuid())
+  portfolioId String
+  portfolio   Portfolio       @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  positionId  String?
+  position    Position?       @relation(fields: [positionId], references: [id], onDelete: SetNull)
+  type        TransactionType
+  symbol      String?
+  amountUsd   Decimal         @db.Decimal(28, 10)
+  quantity    Decimal         @db.Decimal(28, 10)
+  price       Decimal         @db.Decimal(28, 10)
+  mode        TradingMode
+  createdAt   DateTime        @default(now())
+
+  @@index([portfolioId, createdAt])
+}
+
+model Simulation {
+  id          String    @id @default(uuid())
+  portfolioId String
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  changesJson Json
+  beforeJson  Json
+  afterJson   Json
+  createdAt   DateTime  @default(now())
+
+  @@index([portfolioId, createdAt])
+  @@index([userId])
+}
+
+model NewsEvent {
+  id              String     @id @default(uuid())
+  source          String
+  title           String
+  summary         String?
+  url             String?
+  publishedAt     DateTime?
+  detectedAt      DateTime   @default(now())
+  affectedSymbols String[]
+  affectedSectors String[]
+  affectedRegions String[]
+  sentimentScore  Decimal?   @db.Decimal(8, 4)
+  riskType        String?
+  confidence      Decimal?   @db.Decimal(8, 4)
+  createdAt       DateTime   @default(now())
+
+  @@unique([source, url])
+  @@index([publishedAt])
+  @@index([riskType])
+}
+
+model AISignal {
+  id          String     @id @default(uuid())
+  userId      String?
+  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  portfolioId String?
+  portfolio   Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  symbol      String?
+  type        String
+  headline    String
+  summary     String
+  signal      String
+  confidence  Decimal    @db.Decimal(8, 4)
+  rawJson     Json
+  createdAt   DateTime   @default(now())
+
+  @@index([userId])
+  @@index([portfolioId])
+  @@index([symbol])
+}
+
+model AINudge {
+  id            String     @id @default(uuid())
+  userId        String
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  portfolioId   String?
+  portfolio     Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  severity      String
+  title         String
+  message       String
+  actionLabel   String?
+  linkedSymbols String[]
+  readAt        DateTime?
+  createdAt     DateTime   @default(now())
+
+  @@index([userId, readAt, createdAt])
+  @@index([portfolioId])
+}
+
+model OrderIntent {
+  id                String          @id @default(uuid())
+  userId            String
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  walletAddress     String
+  portfolioId       String?
+  portfolio         Portfolio?      @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
+  symbol            String
+  side              OrderSide
+  orderType         OrderType
+  amountUsd         Decimal?        @db.Decimal(28, 10)
+  quantity          Decimal?        @db.Decimal(28, 10)
+  estimatedPrice    Decimal         @db.Decimal(28, 10)
+  estimatedFees     Decimal         @db.Decimal(28, 10)
+  estimatedSlippage Decimal         @db.Decimal(18, 8)
+  status            String
+  mode              TradingMode
+  aiGenerated       Boolean         @default(false)
+  userConfirmedAt   DateTime?
+  executedOrders    ExecutedOrder[]
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([walletAddress])
+  @@index([status])
+}
+
+model ExecutedOrder {
+  id              String      @id @default(uuid())
+  orderIntentId   String
+  orderIntent     OrderIntent @relation(fields: [orderIntentId], references: [id], onDelete: Cascade)
+  provider        String
+  externalOrderId String?
+  status          String
+  fillPrice       Decimal?    @db.Decimal(28, 10)
+  fillQuantity    Decimal?    @db.Decimal(28, 10)
+  fees            Decimal?    @db.Decimal(28, 10)
+  rawResponse     Json
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([orderIntentId])
+  @@index([status])
+}
+
+model Payment {
+  id                  String               @id @default(uuid())
+  userId              String
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscriptionId      String?
+  subscription        PremiumSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  walletAddress       String
+  provider            String
+  network             String
+  chainId             String
+  tokenSymbol         String
+  tokenAddress        String
+  treasuryAddress     String
+  expectedAmountToken Decimal              @db.Decimal(28, 10)
+  amountUsd           Decimal              @db.Decimal(28, 10)
+  status              String
+  txHash              String?              @unique
+  confirmedAt         DateTime?
+  expiresAt           DateTime
+  rawJson             Json
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([walletAddress, createdAt])
+  @@index([status])
+}
+
+model PremiumSubscription {
+  id            String          @id @default(uuid())
+  userId        String
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  walletAddress String
+  wallet        Wallet          @relation(fields: [walletAddress], references: [address], onDelete: Cascade)
+  plan          String
+  status        String
+  startedAt     DateTime
+  expiresAt     DateTime
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  payments      Payment[]
+
+  @@unique([userId, walletAddress, plan])
+  @@index([walletAddress])
+  @@index([status, expiresAt])
+}
+
+model MessagingLink {
+  id             String    @id @default(uuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  walletAddress  String
+  provider       String
+  externalChatId String?
+  linkCode       String    @unique
+  status         String
+  createdAt      DateTime  @default(now())
+  linkedAt       DateTime?
+  expiresAt      DateTime
+
+  @@index([userId, provider])
+  @@index([externalChatId, provider])
+  @@index([walletAddress])
+}
+
+model ProviderStatus {
+  id            String              @id @default(uuid())
+  provider      String              @unique
+  status        ProviderStatusValue
+  lastCheckedAt DateTime
+  message       String
+  latencyMs     Int?
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action       String
+  entityType   String
+  entityId     String?
+  metadataJson Json
+  ipAddress    String?
+  createdAt    DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([entityType, entityId])
+}
