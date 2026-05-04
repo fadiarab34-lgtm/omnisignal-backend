@@ -7,7 +7,6 @@
       "/apps/api/**",
       "/packages/shared/**",
       "/packages/market-connectors/**",
-      "/packages/market-connectors/**",
       "/packages/ai/**",
       "/packages/trading/**",
       "/package.json",
