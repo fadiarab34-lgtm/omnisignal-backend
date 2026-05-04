@@ -1,6 +1,8 @@
 import type { FastifyInstance } from "fastify";
 
 export async function registerHealthRoutes(app: FastifyInstance) {
+  app.get("/health/live", async () => ({ status: "ok", checkedAt: new Date().toISOString() }));
+
   app.get("/health", async () => {
     const [database, redis, providers] = await Promise.all([
       checkDatabase(app),
