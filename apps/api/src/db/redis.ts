@@ -5,7 +5,7 @@ let redis: Redis | undefined;
 
 export function getRedis(env: Env): Redis {
   redis ??= new Redis(env.REDIS_URL, {
-    maxRetriesPerRequest: 2,
+    maxRetriesPerRequest: null,
     enableReadyCheck: true
   });
   return redis;
