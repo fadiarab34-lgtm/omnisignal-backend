@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+const booleanFromEnv = z.preprocess((value) => {
+  if (typeof value !== "string") return value;
+  const normalized = value.trim().toLowerCase();
+  if (["true", "1", "yes", "on"].includes(normalized)) return true;
+  if (["false", "0", "no", "off", ""].includes(normalized)) return false;
+  return value;
+}, z.boolean());
+
 const envSchema = z.object({
   NODE_ENV: z.string().default("development"),
   PORT: z.coerce.number().default(4000),
@@ -17,8 +25,8 @@ const envSchema = z.object({
   HYPERLIQUID_AGENT_PRIVATE_KEY: z.string().optional(),
   HYPERLIQUID_AGENT_ADDRESS: z.string().optional(),
   HYPERLIQUID_TAKER_FEE_BPS: z.coerce.number().optional(),
-  ENABLE_MAINNET_TRADING: z.coerce.boolean().default(false),
-  DISABLE_TRADING: z.coerce.boolean().default(true),
+  ENABLE_MAINNET_TRADING: booleanFromEnv.default(false),
+  DISABLE_TRADING: booleanFromEnv.default(true),
   TRADING_MODE: z.enum(["simulation", "testnet", "mainnet"]).default("simulation"),
   PREMIUM_PRICE_USD: z.coerce.number().default(25),
   PREMIUM_SUBSCRIPTION_DAYS: z.coerce.number().default(30),
