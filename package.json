@@ -19,6 +19,11 @@
     "db:migrate": "pnpm --filter @omnisignal/api prisma:migrate",
     "no-mocks:audit": "! rg -n \"mock|fake|sample|placeholder|hardcoded\" apps packages --glob '!**/*.test.ts' --glob '!**/*.spec.ts' --glob '!**/node_modules/**' --glob '!**/dist/**' --glob '!**/.next/**' --glob '!**/test-results/**' --glob '!**/*.tsbuildinfo'"
   },
+  "dependencies": {
+    "next": "^15.1.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
   "devDependencies": {
     "@playwright/test": "^1.50.1",
     "turbo": "^2.3.3",
