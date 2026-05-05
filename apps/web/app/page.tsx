@@ -7,12 +7,12 @@ export default function HomePage() {
       <header className="landing-header">
         <Link href="/" className="brand"><span className="brand-dot" />OmniSignal</Link>
         <nav className="landing-nav">
-          <a href="#signals">Signals</a>
+          <a href="#signals">Oracle</a>
+          <a href="#geo">Geo Risk</a>
           <a href="#wallet">MetaMask</a>
           <a href="#pricing">Pricing</a>
-          <a href="#contact">Contact</a>
         </nav>
-        <Link href="/portal" className="cta">Get Started</Link>
+        <Link href="/portal/intelligence" className="cta">Open Oracle</Link>
       </header>
       <main>
         <section className="hero prototype-hero">
@@ -30,26 +30,26 @@ export default function HomePage() {
             </div>
           </div>
           <div className="hero-content">
-            <span className="eyebrow"><span className="live-dot" />OmniSignal - AI first-mover portfolio engine</span>
-            <h1>Build a smarter <span>portfolio.</span></h1>
+            <span className="eyebrow"><span className="live-dot" />AI geopolitical market intelligence cockpit</span>
+            <h1>Know what matters <span>before markets fully react.</span></h1>
             <p>
-              Create wallet-linked portfolios, scan live global markets, ask the AI for structured analysis,
-              and prepare safety-gated Hyperliquid testnet order intents from one command center.
+              OmniSignal reads global news, leader statements, social velocity, prediction-market divergence,
+              macro pressure, live market movement, and wallet exposure through one AI Oracle Pool.
             </p>
             <div className="hero-actions">
-              <Link href="/portal" className="primary-btn">Get Started</Link>
-              <a href="#signals" className="secondary-btn">How It Works</a>
-              <a href="#pricing" className="secondary-btn">Pricing</a>
+              <Link href="/portal/intelligence" className="primary-btn">Open AI Oracle</Link>
+              <Link href="/portal/portfolio" className="secondary-btn">Connect Portfolio</Link>
+              <a href="#signals" className="secondary-btn">Signal Stack</a>
             </div>
             <div className="hero-metrics">
-              <div><b>Create</b><span>Wallet-linked portfolios</span></div>
-              <div><b>Analyze</b><span>Live provider-backed signals</span></div>
-              <div><b>Act</b><span>Visual trade confirmation only</span></div>
+              <div><b>Oracle</b><span>Ranks real-world catalysts</span></div>
+              <div><b>Geo Risk</b><span>Maps events to assets</span></div>
+              <div><b>PolyDelta</b><span>Flags probability gaps</span></div>
             </div>
             <div className="trust-strip">
-              <span>No production data substitutes</span>
-              <span>MetaMask signed sessions</span>
-              <span>Premium unlocks more portfolios</span>
+              <span>No invented intelligence cards</span>
+              <span>Real provider or unavailable state</span>
+              <span>Simulation before execution</span>
             </div>
           </div>
         </section>
@@ -61,27 +61,54 @@ export default function HomePage() {
         <section className="landing-band money-section" id="signals">
           <div className="money-layout">
             <div className="money-copy">
-              <div className="section-badge">Signal Stack</div>
-              <h2>From world event to portfolio action.</h2>
+              <div className="section-badge">AI Oracle Pool</div>
+              <h2>From world event to first-mover signal.</h2>
               <p>
-                OmniSignal is built around a live loop: market data, wallet-authenticated portfolios,
-                AI analysis, portfolio nudges, and user-confirmed order tickets.
+                The Oracle Pool takes fresh signals from compliant providers, normalizes them, deduplicates
+                related stories, scores urgency, and turns market-moving events into actionable intelligence cards.
               </p>
               <div className="money-kpis">
-                <div><b>Detect</b><span>Heatmap, events, provider health</span></div>
-                <div><b>Score</b><span>Structured OpenAI analysis</span></div>
-                <div><b>Approve</b><span>Simulation or testnet ticket</span></div>
+                <div><b>Detect</b><span>News, leaders, social, macro</span></div>
+                <div><b>Interpret</b><span>Why it matters and who is exposed</span></div>
+                <div><b>Act</b><span>Watch, hedge, simulate, approve</span></div>
               </div>
               <div className="money-actions">
-                <Link className="primary-btn" href="/portal/intelligence">Open Intelligence</Link>
-                <Link className="secondary-btn" href="/portal/portfolio">Create Portfolio</Link>
+                <Link className="primary-btn" href="/portal/intelligence">Open Oracle Cockpit</Link>
+                <Link className="secondary-btn" href="/portal/settings">Provider Status</Link>
               </div>
             </div>
             <div className="stack-grid compact">
-              <div className="stack-card"><div className="stack-kicker">01 - Intelligence</div><h3>Global heatmap</h3><p>Tiles come from configured market providers through the backend. If providers fail, the UI shows the failure.</p></div>
-              <div className="stack-card"><div className="stack-kicker">02 - Portfolio</div><h3>Wallet-gated records</h3><p>No portfolio appears until MetaMask signs a backend nonce and the session is verified.</p></div>
-              <div className="stack-card"><div className="stack-kicker">03 - AI</div><h3>Structured analysis</h3><p>OpenAI outputs are validated before rendering and stored as signals or nudges when relevant.</p></div>
-              <div className="stack-card"><div className="stack-kicker">04 - Trading</div><h3>Confirmation first</h3><p>AI can prepare an order ticket. Real trading cannot execute without visual confirmation and backend validation.</p></div>
+              <div className="stack-card"><div className="stack-kicker">01 - Leader Posts</div><h3>Statement analysis</h3><p>Configured X or compliant leader-feed providers are interpreted for tone, urgency, affected countries, sectors, and assets.</p></div>
+              <div className="stack-card"><div className="stack-kicker">02 - Geo Risk</div><h3>Market mapping</h3><p>Conflict, sanctions, elections, export controls, central-bank language, and energy disruptions are mapped to tradable exposure.</p></div>
+              <div className="stack-card"><div className="stack-kicker">03 - Herd Signal</div><h3>Crowd behavior</h3><p>Social velocity and narrative acceleration are scored for hype, panic, crowding risk, and contrarian opportunities when configured.</p></div>
+              <div className="stack-card"><div className="stack-kicker">04 - PolyDelta</div><h3>Probability divergence</h3><p>Prediction-market probabilities can be compared with asset movement to flag when markets may not be pricing an event fully.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section className="landing-band wallet-section" id="geo">
+          <div className="wallet-layout">
+            <div className="wallet-copy">
+              <div className="section-badge">Geo Risk Monitor</div>
+              <h2>Political risk translated into market exposure.</h2>
+              <p>
+                OmniSignal is built to explain how global events touch oil, gold, defense, semiconductors,
+                currencies, crypto, shipping, airlines, banks, and user portfolios.
+              </p>
+              <p>
+                Each Oracle card separates the majority report from the contrarian view, so the platform does
+                not merely repeat headlines or follow the crowd.
+              </p>
+              <div className="wallet-actions">
+                <Link href="/portal/intelligence">View Geo Risk</Link>
+                <Link href="/portal/intelligence">Majority vs Contrarian</Link>
+              </div>
+            </div>
+            <div className="wallet-steps">
+              <div><b>1</b><h3>What happened?</h3><p>Fresh events are normalized into one signal model with sources, timestamps, entities, and credibility.</p></div>
+              <div><b>2</b><h3>Why it matters</h3><p>The Oracle scores urgency, confidence, market impact, geopolitical risk, and crowding or divergence where available.</p></div>
+              <div><b>3</b><h3>Who is exposed?</h3><p>Countries, sectors, assets, watchlists, and verified wallet portfolios are connected to the same intelligence card.</p></div>
+              <div><b>4</b><h3>What next?</h3><p>The user can watch, hedge, simulate, approve a proposal, or prepare a trade ticket without voice-only execution.</p></div>
             </div>
           </div>
         </section>
@@ -89,15 +116,15 @@ export default function HomePage() {
         <section className="landing-band wallet-section" id="wallet">
           <div className="wallet-layout">
             <div className="wallet-copy">
-              <div className="section-badge">MetaMask Connection</div>
-              <h2>Your wallet stays yours.</h2>
+              <div className="section-badge">Portfolio Intelligence</div>
+              <h2>Your portfolio appears only after wallet verification.</h2>
               <p>
                 OmniSignal verifies wallet ownership with a signed nonce. It never asks for a seed phrase
                 and never stores private keys.
               </p>
               <p>
-                Portfolio pages remain locked until the wallet session is verified. Premium is also stored
-                against the wallet that pays on-chain.
+                Once connected, Oracle cards can say why an event matters to your holdings, what exposure changed,
+                and which simulation should be reviewed before any approval.
               </p>
               <div className="wallet-actions">
                 <Link href="/portal/portfolio">Connect Wallet</Link>
@@ -116,17 +143,17 @@ export default function HomePage() {
         <section className="landing-band pricing-section" id="pricing">
           <div className="section-center">
             <div className="section-badge">Pricing</div>
-            <h2>Start free. Upgrade by wallet.</h2>
+            <h2>Start free. Unlock deeper intelligence by wallet.</h2>
             <p>Premium payments go from MetaMask to the OmniSignal treasury wallet, then the backend verifies the on-chain transfer and unlocks the paying wallet.</p>
           </div>
           <div className="pricing-grid">
             <div className="plan">
               <div className="plan-name">Freemium</div>
               <div className="plan-price">$0 <span>/ month</span></div>
-              <p className="plan-desc">For trying the platform with strict limits.</p>
+              <p className="plan-desc">For trying the Oracle with strict limits and visible provider health.</p>
               <ul>
                 <li>1 portfolio</li>
-                <li>Limited nudges</li>
+                <li>Limited Oracle nudges</li>
                 <li>Provider-backed market data when configured</li>
                 <li>Wallet verification required</li>
               </ul>
@@ -139,9 +166,9 @@ export default function HomePage() {
               <p className="plan-desc">Unlocks the active OmniSignal intelligence layer for the paying wallet.</p>
               <ul>
                 <li>More saved portfolios</li>
-                <li>More AI portfolio nudges</li>
-                <li>Live update entitlements</li>
-                <li>Telegram AI link when configured</li>
+                <li>More AI Oracle nudges</li>
+                <li>More live intelligence updates</li>
+                <li>Telegram or WhatsApp AI link when configured</li>
                 <li>On-chain payment verification</li>
               </ul>
               <Link href="/portal/settings" className="plan-btn primary-btn">Start Premium</Link>
@@ -151,11 +178,11 @@ export default function HomePage() {
 
         <section className="landing-band contact-section" id="contact">
           <div className="section-center">
-            <div className="section-badge">Contact</div>
-            <h2>Ready to use the terminal?</h2>
-            <p>Open the portal, connect MetaMask, and configure providers in the backend environment for real market data, AI, voice, and trading flows.</p>
+            <div className="section-badge">Command Center</div>
+            <h2>Open the intelligence cockpit.</h2>
+            <p>Connect compliant providers in the backend environment to activate real news, leader posts, prediction markets, social velocity, AI Oracle cards, voice, and portfolio exposure.</p>
             <div className="hero-actions">
-              <Link href="/portal" className="primary-btn">Open Portal</Link>
+              <Link href="/portal/intelligence" className="primary-btn">Open AI Oracle</Link>
               <Link href="/portal/settings" className="secondary-btn">View Status</Link>
             </div>
           </div>
