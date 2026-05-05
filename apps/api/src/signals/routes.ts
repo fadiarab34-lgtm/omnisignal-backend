@@ -34,14 +34,14 @@ export async function registerSignalRoutes(app: FastifyInstance) {
 
   app.post("/signals/refresh", async (request) => {
     const session = await requireSession(request);
-    const events = await ingestSignals(app.services.prisma);
+    const result = await ingestSignals(app.services.prisma, { env: app.services.env, ai: app.services.ai });
     await auditLog(app.services.prisma, {
       userId: session.userId,
       action: "signals_refreshed",
-      entityType: "NewsEvent",
-      metadataJson: { count: events.length },
+      entityType: "OraclePool",
+      metadataJson: { signals: result.signals.length, oracleCards: result.oracleCards.length },
       ipAddress: request.ip
     });
-    return { events };
+    return result;
   });
 }
