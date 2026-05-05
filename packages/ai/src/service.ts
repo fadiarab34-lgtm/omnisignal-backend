@@ -3,13 +3,16 @@ import {
   ProviderUnavailableError,
   aiAssetAnalysisSchema,
   aiPortfolioAnalysisSchema,
+  oracleCardSchema,
   type AIAssetAnalysis,
   type AIPortfolioAnalysis,
   type MarketAsset,
-  type MarketCandle
+  type MarketCandle,
+  type NormalizedSignal,
+  type OracleCard
 } from "@omnisignal/shared";
 import { AI_SYSTEM_PROMPT } from "./prompts";
-import { aiAssetAnalysisJsonSchema, aiPortfolioAnalysisJsonSchema } from "./json-schemas";
+import { aiAssetAnalysisJsonSchema, aiPortfolioAnalysisJsonSchema, oracleCardJsonSchema } from "./json-schemas";
 
 export type NewsEventContext = {
   id: string;
@@ -100,6 +103,30 @@ export class AIAnalysisService {
       throw new ProviderUnavailableError("openai", "OpenAI returned no nudge for the supplied event.", "degraded");
     }
     return nudge;
+  }
+
+  async generateOracleCard(input: {
+    signal: NormalizedSignal;
+    confirmingSignals?: NormalizedSignal[];
+    portfolioContext?: PortfolioContext;
+    marketContext?: MarketAsset[];
+  }): Promise<Omit<OracleCard, "id" | "createdAt" | "signalId">> {
+    const content = await this.structuredResponse("omnisignal_oracle_card", oracleCardJsonSchema, {
+      task: "Generate one OmniSignal Oracle card from a normalized live intelligence signal. Do not add facts that are not supplied.",
+      signal: input.signal,
+      confirmingSignals: input.confirmingSignals?.slice(0, 6) ?? [],
+      portfolioContext: input.portfolioContext,
+      marketContext: input.marketContext?.slice(0, 20) ?? [],
+      requiredBehavior: [
+        "Explain what happened and why it matters.",
+        "Map countries, sectors, and assets only when supported by supplied entities or rules.",
+        "State whether the majority narrative is already priced or still uncertain.",
+        "Give a contrarian view that challenges crowd consensus.",
+        "Suggested action must be a suggestion only; no execution."
+      ],
+      requiredDisclaimer: "Informational analysis only. This is not financial advice and does not guarantee outcomes."
+    });
+    return oracleCardSchema.omit({ id: true, createdAt: true, signalId: true }).parse(content);
   }
 
   async explainTradeIntent(input: {
