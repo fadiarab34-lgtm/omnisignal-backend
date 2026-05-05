@@ -1,5 +1,10 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
-export const WS_URL = process.env.NEXT_PUBLIC_WS_URL ?? "ws://localhost:4000/market/live";
+const productionApiUrl = "https://omnisignal-backend-production.up.railway.app";
+const productionWsUrl = "wss://omnisignal-backend-production.up.railway.app/market/live";
+
+export const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? (process.env.NODE_ENV === "production" ? productionApiUrl : "http://localhost:4000");
+export const WS_URL =
+  process.env.NEXT_PUBLIC_WS_URL ?? (process.env.NODE_ENV === "production" ? productionWsUrl : "ws://localhost:4000/market/live");
 
 export class ApiError extends Error {
   constructor(public readonly status: number, message: string, public readonly payload?: unknown) {
