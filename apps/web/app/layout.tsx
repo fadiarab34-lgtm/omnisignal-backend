@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./oracle.css";
 import { Providers } from "../components/providers";
 
 export const metadata: Metadata = {
