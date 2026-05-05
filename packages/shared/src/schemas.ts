@@ -5,6 +5,10 @@ export const portfolioModeSchema = z.enum(["simulation", "imported", "trading"])
 export const tradingModeSchema = z.enum(["simulation", "testnet", "mainnet"]);
 export const orderSideSchema = z.enum(["buy", "sell"]);
 export const orderTypeSchema = z.enum(["market", "limit"]);
+export const signalSourceTypeSchema = z.enum(["x_post", "news", "social", "prediction_market", "market_data", "macro", "portfolio"]);
+export const signalSentimentSchema = z.enum(["bullish", "bearish", "neutral", "mixed", "uncertain"]);
+export const oracleSuggestedActionSchema = z.enum(["buy", "sell", "short", "hedge", "hold", "watch", "simulate"]);
+export const oracleTimeHorizonSchema = z.enum(["intraday", "short_term", "medium_term", "long_term"]);
 
 export const marketAssetSchema = z.object({
   symbol: z.string().min(1),
@@ -92,6 +96,76 @@ export const aiPortfolioAnalysisSchema = z.object({
   disclaimer: z.string().min(1).max(400)
 });
 
+export const signalEntitiesSchema = z.object({
+  people: z.array(z.string()).default([]),
+  countries: z.array(z.string()).default([]),
+  companies: z.array(z.string()).default([]),
+  tickers: z.array(z.string()).default([]),
+  assets: z.array(z.string()).default([]),
+  sectors: z.array(z.string()).default([]),
+  commodities: z.array(z.string()).default([]),
+  currencies: z.array(z.string()).default([]),
+  regions: z.array(z.string()).default([])
+});
+
+export const normalizedSignalSchema = z.object({
+  id: z.string().optional(),
+  sourceType: signalSourceTypeSchema,
+  sourceName: z.string().min(1).max(120),
+  sourceUrl: z.string().url().optional().nullable(),
+  publishedAt: z.string().datetime().optional().nullable(),
+  ingestedAt: z.string().datetime().optional(),
+  title: z.string().min(1).max(240),
+  rawText: z.string().min(1).max(5000),
+  summary: z.string().max(900).optional().nullable(),
+  category: z.string().max(80).optional().nullable(),
+  entities: signalEntitiesSchema,
+  sentiment: signalSentimentSchema,
+  urgencyScore: z.number().min(0).max(1),
+  confidenceScore: z.number().min(0).max(1),
+  marketImpactScore: z.number().min(0).max(1),
+  geoRiskScore: z.number().min(0).max(1),
+  crowdingScore: z.number().min(0).max(1).optional().nullable(),
+  divergenceScore: z.number().min(0).max(1).optional().nullable(),
+  affectedAssets: z.array(z.string()).default([]),
+  affectedSectors: z.array(z.string()).default([]),
+  suggestedAction: oracleSuggestedActionSchema,
+  timeHorizon: oracleTimeHorizonSchema,
+  portfolioExposure: z.number().min(0).max(100).optional().nullable(),
+  oracleSummary: z.string().max(900).optional().nullable(),
+  userAlertRequired: z.boolean()
+});
+
+export const oracleCardSchema = z.object({
+  id: z.string().optional(),
+  signalId: z.string().optional().nullable(),
+  title: z.string().min(1).max(180),
+  summary: z.string().min(1).max(600),
+  whyItMatters: z.string().min(1).max(900),
+  sourceType: signalSourceTypeSchema,
+  sourceName: z.string().min(1).max(120),
+  sourceUrl: z.string().url().optional().nullable(),
+  sourceCredibility: z.number().min(0).max(1),
+  publishedAt: z.string().datetime().optional().nullable(),
+  affectedCountries: z.array(z.string()).default([]),
+  affectedSectors: z.array(z.string()).default([]),
+  affectedAssets: z.array(z.string()).default([]),
+  direction: signalSentimentSchema,
+  urgencyScore: z.number().min(0).max(1),
+  confidenceScore: z.number().min(0).max(1),
+  marketImpactScore: z.number().min(0).max(1),
+  geoRiskScore: z.number().min(0).max(1),
+  timeHorizon: oracleTimeHorizonSchema,
+  suggestedAction: oracleSuggestedActionSchema,
+  portfolioExposure: z.number().min(0).max(100).optional().nullable(),
+  marketAlreadyPricing: z.boolean().optional().nullable(),
+  predictionDivergence: z.number().min(0).max(1).optional().nullable(),
+  crowdingScore: z.number().min(0).max(1).optional().nullable(),
+  majorityReport: z.string().max(900).optional().nullable(),
+  contrarianView: z.string().max(900).optional().nullable(),
+  createdAt: z.string().datetime().optional()
+});
+
 export const createPortfolioSchema = z.object({
   name: z.string().min(1).max(80),
   mode: portfolioModeSchema.default("simulation"),
@@ -130,3 +204,5 @@ export const orderIntentSchema = z.object({
 
 export type AIAssetAnalysis = z.infer<typeof aiAssetAnalysisSchema>;
 export type AIPortfolioAnalysis = z.infer<typeof aiPortfolioAnalysisSchema>;
+export type NormalizedSignalInput = z.infer<typeof normalizedSignalSchema>;
+export type OracleCardInput = z.infer<typeof oracleCardSchema>;
