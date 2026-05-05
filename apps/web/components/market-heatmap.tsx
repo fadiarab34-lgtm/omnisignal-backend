@@ -176,7 +176,7 @@ export function MarketHeatmap() {
             {heatmap.data.errors.length > 0 && (
               <div className="nudge warning compact-nudge">
                 <b>Partial provider coverage</b>
-                <p>{heatmap.data.errors.slice(0, 3).map((error) => `${error.symbol}: ${error.message}`).join(" · ")}</p>
+                <p>{heatmap.data.errors.slice(0, 3).map((error) => `${error.symbol}: ${error.message}`).join(" - ")}</p>
               </div>
             )}
           </>
