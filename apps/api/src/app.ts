@@ -13,6 +13,7 @@ import { registerAuthRoutes } from "./auth/routes";
 import { registerMarketRoutes } from "./market/routes";
 import { registerPortfolioRoutes } from "./portfolio/routes";
 import { registerSignalRoutes } from "./signals/routes";
+import { registerOracleRoutes } from "./oracle/routes";
 import { registerAiRoutes } from "./ai/routes";
 import { registerTradingRoutes } from "./trading/routes";
 import { registerBillingRoutes } from "./billing/routes";
@@ -72,6 +73,7 @@ export async function buildApp() {
   await registerMarketRoutes(app);
   await registerPortfolioRoutes(app);
   await registerSignalRoutes(app);
+  await registerOracleRoutes(app);
   await registerAiRoutes(app);
   await registerTradingRoutes(app);
   await registerBillingRoutes(app);
