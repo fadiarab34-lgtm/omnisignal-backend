@@ -1,5 +1,5 @@
-import { MarketHeatmap } from "../../../components/market-heatmap";
+import { OracleCockpit } from "../../../components/oracle-cockpit";
 
 export default function IntelligencePage() {
-  return <MarketHeatmap />;
+  return <OracleCockpit />;
 }
