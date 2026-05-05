@@ -127,7 +127,7 @@ export function MarketHeatmap() {
         <div className="marketmap-head">
           <div>
             <div className="marketmap-title">Global Market Heatmap by Industry</div>
-            <div className="marketmap-sub">Every tile is rendered from backend provider data. Missing providers show unavailable states instead of sample prices.</div>
+            <div className="marketmap-sub">Every tile is rendered from backend provider data. Missing providers show unavailable states instead of substitute prices.</div>
           </div>
           <div className="marketmap-tabs">
             {filters.map(([key, label]) => <button key={key} className={`hm-filter ${filter === key ? "on" : ""}`} onClick={() => setFilter(key)}>{label}</button>)}
