@@ -2,6 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "installCommand": "corepack enable && pnpm install --no-frozen-lockfile",
-  "buildCommand": "corepack enable && pnpm --filter @omnisignal/shared build && pnpm --filter @omnisignal/web build && rm -rf .next && cp -R apps/web/.next .next",
+  "buildCommand": "corepack enable && pnpm --filter @omnisignal/shared build && pnpm exec next build",
   "outputDirectory": ".next"
 }
