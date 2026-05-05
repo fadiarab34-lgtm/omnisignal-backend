@@ -55,32 +55,35 @@ enum ProviderStatusValue {
 }
 
 model User {
-  id             String                @id @default(uuid())
-  email          String?               @unique
-  wallets        Wallet[]
-  portfolios     Portfolio[]
-  aiSignals      AISignal[]
-  aiNudges       AINudge[]
-  orderIntents   OrderIntent[]
-  simulations    Simulation[]
-  payments       Payment[]
-  subscriptions  PremiumSubscription[]
-  messagingLinks MessagingLink[]
-  auditLogs      AuditLog[]
-  createdAt      DateTime              @default(now())
-  updatedAt      DateTime              @updatedAt
+  id              String                @id @default(uuid())
+  email           String?               @unique
+  wallets         Wallet[]
+  portfolios      Portfolio[]
+  aiSignals       AISignal[]
+  aiNudges        AINudge[]
+  orderIntents    OrderIntent[]
+  simulations     Simulation[]
+  watchlists      WatchlistItem[]
+  approvalActions ApprovalAction[]
+  voiceCommands   VoiceCommandHistory[]
+  payments        Payment[]
+  subscriptions   PremiumSubscription[]
+  messagingLinks  MessagingLink[]
+  auditLogs       AuditLog[]
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
 }
 
 model Wallet {
-  id             String                @id @default(uuid())
-  userId         String
-  user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  address        String
-  chainId        String?
-  verifiedAt     DateTime
-  subscriptions  PremiumSubscription[]
-  createdAt      DateTime              @default(now())
-  updatedAt      DateTime              @updatedAt
+  id            String                @id @default(uuid())
+  userId        String
+  user          User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address       String
+  chainId       String?
+  verifiedAt    DateTime
+  subscriptions PremiumSubscription[]
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
 
   @@unique([address])
   @@index([userId])
@@ -192,24 +195,119 @@ model Simulation {
 }
 
 model NewsEvent {
-  id              String     @id @default(uuid())
+  id              String    @id @default(uuid())
   source          String
   title           String
   summary         String?
   url             String?
   publishedAt     DateTime?
-  detectedAt      DateTime   @default(now())
+  detectedAt      DateTime  @default(now())
   affectedSymbols String[]
   affectedSectors String[]
   affectedRegions String[]
-  sentimentScore  Decimal?   @db.Decimal(8, 4)
+  sentimentScore  Decimal?  @db.Decimal(8, 4)
   riskType        String?
-  confidence      Decimal?   @db.Decimal(8, 4)
-  createdAt       DateTime   @default(now())
+  confidence      Decimal?  @db.Decimal(8, 4)
+  createdAt       DateTime  @default(now())
 
   @@unique([source, url])
   @@index([publishedAt])
   @@index([riskType])
+}
+
+model SourceMetadata {
+  id            String    @id @default(uuid())
+  sourceType    String
+  sourceName    String
+  provider      String
+  credibility   Decimal   @default(0.5) @db.Decimal(8, 4)
+  url           String?
+  configStatus  String
+  lastFetchedAt DateTime?
+  rawJson       Json
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([sourceType, sourceName, provider])
+  @@index([sourceType])
+  @@index([configStatus])
+}
+
+model NormalizedSignal {
+  id                String       @id @default(uuid())
+  sourceType        String
+  sourceName        String
+  sourceUrl         String?
+  publishedAt       DateTime?
+  ingestedAt        DateTime     @default(now())
+  title             String
+  rawText           String
+  summary           String?
+  category          String?
+  entitiesJson      Json
+  sentiment         String
+  urgencyScore      Decimal      @default(0) @db.Decimal(8, 4)
+  confidenceScore   Decimal      @default(0) @db.Decimal(8, 4)
+  marketImpactScore Decimal      @default(0) @db.Decimal(8, 4)
+  geoRiskScore      Decimal      @default(0) @db.Decimal(8, 4)
+  crowdingScore     Decimal?     @db.Decimal(8, 4)
+  divergenceScore   Decimal?     @db.Decimal(8, 4)
+  affectedAssets    String[]
+  affectedSectors   String[]
+  suggestedAction   String
+  timeHorizon       String
+  portfolioExposure Decimal?     @db.Decimal(8, 4)
+  oracleSummary     String?
+  userAlertRequired Boolean      @default(false)
+  dedupeKey         String       @unique
+  rawJson           Json
+  oracleCards       OracleCard[]
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  @@index([sourceType, publishedAt])
+  @@index([category])
+  @@index([sentiment])
+  @@index([userAlertRequired, ingestedAt])
+}
+
+model OracleCard {
+  id                   String            @id @default(uuid())
+  signalId             String?
+  signal               NormalizedSignal? @relation(fields: [signalId], references: [id], onDelete: SetNull)
+  title                String
+  summary              String
+  whyItMatters         String
+  sourceType           String
+  sourceName           String
+  sourceUrl            String?
+  sourceCredibility    Decimal           @db.Decimal(8, 4)
+  publishedAt          DateTime?
+  affectedCountries    String[]
+  affectedSectors      String[]
+  affectedAssets       String[]
+  direction            String
+  urgencyScore         Decimal           @db.Decimal(8, 4)
+  confidenceScore      Decimal           @db.Decimal(8, 4)
+  marketImpactScore    Decimal           @db.Decimal(8, 4)
+  geoRiskScore         Decimal           @db.Decimal(8, 4)
+  timeHorizon          String
+  suggestedAction      String
+  portfolioExposure    Decimal?          @db.Decimal(8, 4)
+  marketAlreadyPricing Boolean?
+  predictionDivergence Decimal?          @db.Decimal(8, 4)
+  crowdingScore        Decimal?          @db.Decimal(8, 4)
+  majorityReport       String?
+  contrarianView       String?
+  rawJson              Json
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  @@index([signalId])
+  @@index([createdAt])
+  @@index([sourceType])
+  @@index([direction])
+  @@index([suggestedAction])
 }
 
 model AISignal {
@@ -248,6 +346,61 @@ model AINudge {
 
   @@index([userId, readAt, createdAt])
   @@index([portfolioId])
+}
+
+model WatchlistItem {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  walletAddress String
+  symbol        String
+  assetClass    String?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, symbol])
+  @@index([walletAddress])
+}
+
+model ApprovalAction {
+  id            String    @id @default(uuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  walletAddress String
+  portfolioId   String?
+  actionType    String
+  status        String
+  sourceType    String
+  sourceId      String?
+  simulationId  String?
+  orderIntentId String?
+  rationale     String
+  metadataJson  Json
+  approvedAt    DateTime?
+  rejectedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId, status, createdAt])
+  @@index([walletAddress])
+  @@index([sourceType, sourceId])
+}
+
+model VoiceCommandHistory {
+  id            String   @id @default(uuid())
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  walletAddress String?
+  commandText   String
+  responseText  String?
+  toolName      String?
+  toolArgsJson  Json?
+  status        String
+  createdAt     DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([walletAddress])
 }
 
 model OrderIntent {
@@ -325,17 +478,17 @@ model Payment {
 }
 
 model PremiumSubscription {
-  id            String          @id @default(uuid())
+  id            String    @id @default(uuid())
   userId        String
-  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   walletAddress String
-  wallet        Wallet          @relation(fields: [walletAddress], references: [address], onDelete: Cascade)
+  wallet        Wallet    @relation(fields: [walletAddress], references: [address], onDelete: Cascade)
   plan          String
   status        String
   startedAt     DateTime
   expiresAt     DateTime
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   payments      Payment[]
 
   @@unique([userId, walletAddress, plan])
