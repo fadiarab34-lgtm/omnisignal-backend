@@ -30,7 +30,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="hero-content">
-            <span className="eyebrow"><span className="live-dot" />OmniSignal · AI first-mover portfolio engine</span>
+            <span className="eyebrow"><span className="live-dot" />OmniSignal - AI first-mover portfolio engine</span>
             <h1>Build a smarter <span>portfolio.</span></h1>
             <p>
               Create wallet-linked portfolios, scan live global markets, ask the AI for structured analysis,
@@ -78,10 +78,10 @@ export default function HomePage() {
               </div>
             </div>
             <div className="stack-grid compact">
-              <div className="stack-card"><div className="stack-kicker">01 · Intelligence</div><h3>Global heatmap</h3><p>Tiles come from configured market providers through the backend. If providers fail, the UI shows the failure.</p></div>
-              <div className="stack-card"><div className="stack-kicker">02 · Portfolio</div><h3>Wallet-gated records</h3><p>No portfolio appears until MetaMask signs a backend nonce and the session is verified.</p></div>
-              <div className="stack-card"><div className="stack-kicker">03 · AI</div><h3>Structured analysis</h3><p>OpenAI outputs are validated before rendering and stored as signals or nudges when relevant.</p></div>
-              <div className="stack-card"><div className="stack-kicker">04 · Trading</div><h3>Confirmation first</h3><p>AI can prepare an order ticket. Real trading cannot execute without visual confirmation and backend validation.</p></div>
+              <div className="stack-card"><div className="stack-kicker">01 - Intelligence</div><h3>Global heatmap</h3><p>Tiles come from configured market providers through the backend. If providers fail, the UI shows the failure.</p></div>
+              <div className="stack-card"><div className="stack-kicker">02 - Portfolio</div><h3>Wallet-gated records</h3><p>No portfolio appears until MetaMask signs a backend nonce and the session is verified.</p></div>
+              <div className="stack-card"><div className="stack-kicker">03 - AI</div><h3>Structured analysis</h3><p>OpenAI outputs are validated before rendering and stored as signals or nudges when relevant.</p></div>
+              <div className="stack-card"><div className="stack-kicker">04 - Trading</div><h3>Confirmation first</h3><p>AI can prepare an order ticket. Real trading cannot execute without visual confirmation and backend validation.</p></div>
             </div>
           </div>
         </section>
