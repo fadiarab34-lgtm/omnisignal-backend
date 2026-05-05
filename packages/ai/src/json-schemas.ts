@@ -128,3 +128,60 @@ export const aiPortfolioAnalysisJsonSchema = {
     disclaimer: { type: "string" }
   }
 } as const;
+
+export const oracleCardJsonSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "title",
+    "summary",
+    "whyItMatters",
+    "sourceType",
+    "sourceName",
+    "sourceUrl",
+    "sourceCredibility",
+    "publishedAt",
+    "affectedCountries",
+    "affectedSectors",
+    "affectedAssets",
+    "direction",
+    "urgencyScore",
+    "confidenceScore",
+    "marketImpactScore",
+    "geoRiskScore",
+    "timeHorizon",
+    "suggestedAction",
+    "portfolioExposure",
+    "marketAlreadyPricing",
+    "predictionDivergence",
+    "crowdingScore",
+    "majorityReport",
+    "contrarianView"
+  ],
+  properties: {
+    title: { type: "string" },
+    summary: { type: "string" },
+    whyItMatters: { type: "string" },
+    sourceType: { type: "string", enum: ["x_post", "news", "social", "prediction_market", "market_data", "macro", "portfolio"] },
+    sourceName: { type: "string" },
+    sourceUrl: { type: ["string", "null"] },
+    sourceCredibility: { type: "number", minimum: 0, maximum: 1 },
+    publishedAt: { type: ["string", "null"] },
+    affectedCountries: { type: "array", items: { type: "string" } },
+    affectedSectors: { type: "array", items: { type: "string" } },
+    affectedAssets: { type: "array", items: { type: "string" } },
+    direction: { type: "string", enum: ["bullish", "bearish", "neutral", "mixed", "uncertain"] },
+    urgencyScore: { type: "number", minimum: 0, maximum: 1 },
+    confidenceScore: { type: "number", minimum: 0, maximum: 1 },
+    marketImpactScore: { type: "number", minimum: 0, maximum: 1 },
+    geoRiskScore: { type: "number", minimum: 0, maximum: 1 },
+    timeHorizon: { type: "string", enum: ["intraday", "short_term", "medium_term", "long_term"] },
+    suggestedAction: { type: "string", enum: ["buy", "sell", "short", "hedge", "hold", "watch", "simulate"] },
+    portfolioExposure: { type: ["number", "null"], minimum: 0, maximum: 100 },
+    marketAlreadyPricing: { type: ["boolean", "null"] },
+    predictionDivergence: { type: ["number", "null"], minimum: 0, maximum: 1 },
+    crowdingScore: { type: ["number", "null"], minimum: 0, maximum: 1 },
+    majorityReport: { type: ["string", "null"] },
+    contrarianView: { type: ["string", "null"] }
+  }
+} as const;
