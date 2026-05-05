@@ -39,7 +39,7 @@ type Portfolio = {
 export function PortfolioUniverse({ id }: { id: string }) {
   const queryClient = useQueryClient();
   const [selectedSymbol, setSelectedSymbol] = useState<string | undefined>();
-  const [amountUsd, setAmountUsd] = useState("1000");
+  const [amountUsd, setAmountUsd] = useState("");
   const portfolio = useQuery({
     queryKey: ["portfolio", id],
     queryFn: () => apiFetch<{ portfolio: Portfolio }>(`/portfolio/${id}`),
@@ -63,76 +63,88 @@ export function PortfolioUniverse({ id }: { id: string }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["portfolio", id] })
   });
   const voice = useRealtimeVoice(id);
+  const activeNudge = portfolio.data?.portfolio.aiNudges[0];
   const biggest = useMemo(() => {
     const positions = portfolio.data?.portfolio.positions ?? [];
-    return {
-      winner: [...positions].sort((a, b) => b.dailyChangePercent - a.dailyChangePercent)[0],
-      drag: [...positions].sort((a, b) => a.dailyChangePercent - b.dailyChangePercent)[0]
-    };
+    return [...positions].sort((a, b) => b.allocationPercent - a.allocationPercent)[0];
   }, [portfolio.data?.portfolio.positions]);
 
   return (
     <WalletGate>
-      {portfolio.isLoading && <div className="panel"><div className="state"><strong>Loading universe</strong>Refreshing portfolio positions with live prices.</div></div>}
-      {portfolio.isError && <div className="panel"><div className="state"><strong>Universe unavailable</strong>{(portfolio.error as Error).message}</div></div>}
+      {portfolio.isLoading && <div className="portfolio-empty-card"><h1>Loading universe</h1><p>Refreshing portfolio positions with live prices.</p></div>}
+      {portfolio.isError && <div className="portfolio-empty-card"><h1>Universe unavailable</h1><p>{(portfolio.error as Error).message}</p></div>}
       {portfolio.data?.portfolio && (
-        <div className="universe-shell">
-          <aside className="panel">
-            <div className="panel-head"><div><div className="panel-title">{portfolio.data.portfolio.name}</div><div className="panel-sub">Simulation Mode · live-priced positions</div></div></div>
-            <div className="panel-body asset-panel">
-              <div className="metric"><span>Total</span><strong>{formatUsd(portfolio.data.portfolio.totalValue)}</strong></div>
-              <div className="metric"><span>Daily Change</span><strong className={portfolio.data.portfolio.dailyChangePercent >= 0 ? "healthy" : "down"}>{formatUsd(portfolio.data.portfolio.dailyChangeAmount)} · {formatPct(portfolio.data.portfolio.dailyChangePercent)}</strong></div>
-              <div className="metric"><span>Biggest Winner</span><strong>{biggest.winner ? `${biggest.winner.symbol} ${formatPct(biggest.winner.dailyChangePercent)}` : "N/A"}</strong></div>
-              <div className="metric"><span>Biggest Drag</span><strong>{biggest.drag ? `${biggest.drag.symbol} ${formatPct(biggest.drag.dailyChangePercent)}` : "N/A"}</strong></div>
-              <div className="signal-feed">
-                {portfolio.data.portfolio.aiNudges.slice(0, 3).map((nudge) => <div className={`nudge ${nudge.severity}`} key={nudge.id}><b>{nudge.title}</b><p>{nudge.message}</p></div>)}
-              </div>
+        <div className="universe-page">
+          <header className="universe-command-bar">
+            <div className="universe-value-card">
+              <span>Your Portfolio</span>
+              <b>{formatUsd(portfolio.data.portfolio.totalValue)}</b>
+              <em className={portfolio.data.portfolio.dailyChangePercent >= 0 ? "healthy" : "down"}>{formatPct(portfolio.data.portfolio.dailyChangePercent)} projected</em>
             </div>
-          </aside>
-          <section className="universe-stage">
-            <Link className="icon-btn close-link" href={`/portal/portfolio/${id}`} title="Close universe"><X size={17} /></Link>
-            {portfolio.data.portfolio.positions.length === 0 ? (
-              <div className="state"><strong>No universe nodes</strong>Add real positions to this portfolio before opening the 3D universe.</div>
-            ) : (
-              <Canvas camera={{ position: [0, 0, 9], fov: 48 }}>
-                <ambientLight intensity={0.7} />
-                <pointLight position={[5, 5, 5]} intensity={1.2} color="#58a6ff" />
-                {portfolio.data.portfolio.positions.map((position, index) => (
-                  <Node key={position.id} position={position} index={index} total={portfolio.data!.portfolio.positions.length} selected={selected?.id === position.id} onSelect={() => setSelectedSymbol(position.symbol)} />
-                ))}
-              </Canvas>
-            )}
-          </section>
-          <aside className="panel">
-            <div className="panel-head"><div><div className="panel-title">{selected?.symbol ?? "No asset"}</div><div className="panel-sub">{selected?.name ?? "Select a node"}</div></div></div>
-            <div className="panel-body asset-panel">
-              <div className="voice-bar">
-                <span className="voice-dot" />
-                <span>{voice.message}</span>
-              </div>
-              <div style={{ display: "flex", gap: 8 }}>
-                {voice.state === "live" ? <button className="secondary-btn" onClick={voice.stop}>Stop Voice</button> : <button className="primary-btn" onClick={() => voice.start({ route: "portfolio-universe", selectedSymbol: selected?.symbol })}>Start Real Voice</button>}
-              </div>
-              {selected && (
-                <>
-                  <div className="metric-row">
-                    <div className="metric"><span>Price</span><strong>{formatUsd(selected.currentPrice)}</strong></div>
-                    <div className="metric"><span>Allocation</span><strong>{selected.allocationPercent.toFixed(2)}%</strong></div>
-                    <div className="metric"><span>Day</span><strong className={selected.dailyChangePercent >= 0 ? "healthy" : "down"}>{formatPct(selected.dailyChangePercent)}</strong></div>
-                  </div>
-                  <div className="chart-box">{candles.data ? <AssetChart candles={candles.data.candles} /> : candles.isError ? <div className="state"><strong>Chart unavailable</strong>{(candles.error as Error).message}</div> : <div className="state"><strong>Loading chart</strong>Fetching real candles.</div>}</div>
-                  <div className="field"><label>Simulation amount USD</label><input value={amountUsd} onChange={(event) => setAmountUsd(event.target.value)} /></div>
-                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    <button className="primary-btn" onClick={() => simulate.mutate("buy")} disabled={simulate.isPending}>Buy More</button>
-                    <button className="danger-btn" onClick={() => simulate.mutate("sell")} disabled={simulate.isPending}>Sell</button>
-                    <Link className="secondary-btn" href={`/portal/trading?symbol=${encodeURIComponent(selected.symbol)}&side=buy`}>Prepare Trade Ticket</Link>
-                  </div>
-                  <button className="secondary-btn" onClick={() => reset.mutate()} disabled={reset.isPending}>Reset Simulation</button>
-                  {(simulate.isError || reset.isError) && <div className="nudge urgent"><b>Simulation unavailable</b><p>{((simulate.error ?? reset.error) as Error).message}</p></div>}
-                </>
+            <div className="universe-title">
+              <h1><span />Immersive Portfolio Universe <em>· {portfolio.data.portfolio.name}</em></h1>
+              <p>3D view for this portfolio. Click a node to inspect allocation, buy/sell actions, geopolitical impact and prediction analysis.</p>
+            </div>
+            <div className="universe-live-signal">
+              <span /> <b>Live AI Signals</b>
+              <p>{activeNudge ? activeNudge.message : "No stored AI nudge for this portfolio yet."}</p>
+            </div>
+            <Link className="universe-close" href={`/portal/portfolio/${id}`} title="Close universe"><X size={16} /></Link>
+          </header>
+          <main className="universe-main">
+            <div className="universe-voice-bubble">
+              <button className="voice-orb" onClick={() => voice.state === "live" ? voice.stop() : voice.start({ route: "portfolio-universe", selectedSymbol: selected?.symbol })} />
+              <div>{selected ? `${selected.symbol} selected. Inspect allocation, scenarios and simulation actions.` : voice.message}</div>
+            </div>
+            <section className="universe-canvas">
+              {portfolio.data.portfolio.positions.length === 0 ? (
+                <div className="state"><strong>No universe nodes</strong>Add real positions to this portfolio before opening the 3D universe.</div>
+              ) : (
+                <Canvas camera={{ position: [0, 0, 10], fov: 46 }}>
+                  <ambientLight intensity={0.65} />
+                  <pointLight position={[3, 4, 5]} intensity={1.25} color="#58a6ff" />
+                  <pointLight position={[-4, -3, 3]} intensity={0.7} color="#bc8cff" />
+                  <mesh position={[0, 0, 0]}>
+                    <sphereGeometry args={[0.08, 24, 24]} />
+                    <meshStandardMaterial color="#9ee8ff" emissive="#58a6ff" emissiveIntensity={1.2} />
+                  </mesh>
+                  {portfolio.data.portfolio.positions.map((position, index) => (
+                    <Node key={position.id} position={position} index={index} total={portfolio.data!.portfolio.positions.length} selected={selected?.id === position.id} onSelect={() => setSelectedSymbol(position.symbol)} />
+                  ))}
+                </Canvas>
               )}
-            </div>
-          </aside>
+            </section>
+            <div className="universe-controls"><button onClick={() => reset.mutate()} disabled={reset.isPending}>Reset</button><button>Rotate: On</button><span>Scroll to zoom · drag to rotate · click node to inspect</span></div>
+            {selected && (
+              <aside className="universe-asset-panel">
+                <div className="universe-price-card">
+                  <span>Price Action</span>
+                  <h2>{selected.symbol}</h2>
+                  <b>{formatUsd(selected.currentPrice)}</b>
+                  <em className={selected.dailyChangePercent >= 0 ? "healthy" : "down"}>{formatPct(selected.dailyChangePercent)}</em>
+                </div>
+                <div className="universe-chart-card">{candles.data ? <AssetChart candles={candles.data.candles} /> : candles.isError ? <div className="state"><strong>Chart unavailable</strong>{(candles.error as Error).message}</div> : <div className="state"><strong>Loading chart</strong>Fetching real candles.</div>}</div>
+                <div className="universe-detail-section">
+                  <span>Allocation</span>
+                  <p>{selected.allocationPercent.toFixed(2)}% of portfolio <b>{formatUsd(selected.marketValue)}</b></p>
+                  <i><span style={{ width: `${Math.min(100, selected.allocationPercent)}%` }} /></i>
+                </div>
+                <div className="universe-detail-section">
+                  <span>AI Signal</span>
+                  <p>{activeNudge?.message ?? "Run portfolio analysis to store an AI signal for this universe."}</p>
+                </div>
+                <div className="field"><label>Simulation amount USD</label><input value={amountUsd} onChange={(event) => setAmountUsd(event.target.value)} /></div>
+                <div className="universe-action-row">
+                  <button className="primary-btn" onClick={() => simulate.mutate("buy")} disabled={simulate.isPending || !amountUsd || !selected}>Buy More</button>
+                  <button className="danger-btn" onClick={() => simulate.mutate("sell")} disabled={simulate.isPending || !amountUsd || !selected}>Sell / Reduce</button>
+                </div>
+                <div className="universe-mini-metrics">
+                  <div><span>Portfolio Value</span><b>{formatUsd(portfolio.data.portfolio.totalValue)}</b></div>
+                  <div><span>Largest Node</span><b>{biggest?.symbol ?? "N/A"}</b></div>
+                </div>
+              </aside>
+            )}
+          </main>
         </div>
       )}
     </WalletGate>
@@ -140,17 +152,36 @@ export function PortfolioUniverse({ id }: { id: string }) {
 }
 
 function Node({ position, index, total, selected, onSelect }: { position: Position; index: number; total: number; selected: boolean; onSelect: () => void }) {
+  const sector = sectorVector(position.assetClass);
+  const localIndex = index + 1;
   const angle = (index / Math.max(total, 1)) * Math.PI * 2;
-  const radius = 3.2;
-  const size = 0.32 + Math.min(1.3, position.allocationPercent / 35);
-  const color = position.dailyChangePercent >= 0 ? "#3fb950" : "#f85149";
+  const radius = 1.4 + Math.min(3.2, position.allocationPercent / 9);
+  const size = 0.24 + Math.min(0.95, position.allocationPercent / 42);
+  const color = nodeColor(position.assetClass, position.dailyChangePercent);
   return (
-    <group position={[Math.cos(angle) * radius, Math.sin(angle) * radius, Math.sin(angle * 1.7) * 0.8]} onClick={onSelect}>
-      <mesh scale={selected ? size * 1.16 : size}>
+    <group position={[sector[0] + Math.cos(angle) * radius * 0.28 * localIndex / Math.max(total, 2), sector[1] + Math.sin(angle) * radius * 0.22 * localIndex / Math.max(total, 2), sector[2]]} onClick={onSelect}>
+      <mesh scale={selected ? size * 1.25 : size}>
         <sphereGeometry args={[1, 32, 32]} />
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={selected ? 0.55 : 0.22} roughness={0.35} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={selected ? 0.75 : 0.32} roughness={0.35} transparent opacity={0.72} />
       </mesh>
-      <Text position={[0, -1.35 * size, 0]} fontSize={0.22} color="#e6edf3" anchorX="center" anchorY="middle">{position.symbol}</Text>
+      <Text position={[0, 0, 0.72]} fontSize={0.22} color="#e6edf3" anchorX="center" anchorY="middle">{position.symbol}</Text>
+      <Text position={[0, -0.32, 0.72]} fontSize={0.11} color={position.dailyChangePercent >= 0 ? "#55e6a5" : "#ff6f7e"} anchorX="center" anchorY="middle">{formatPct(position.dailyChangePercent)}</Text>
     </group>
   );
+}
+
+function sectorVector(assetClass: string): [number, number, number] {
+  if (assetClass === "crypto") return [-1.8, 1.45, 0.25];
+  if (assetClass === "commodity") return [-2.6, -0.95, 0.1];
+  if (assetClass === "forex") return [2.5, 1.2, -0.15];
+  if (assetClass === "index" || assetClass === "etf") return [2.1, -1.2, 0.15];
+  return [1.1, -2.15, 0];
+}
+
+function nodeColor(assetClass: string, change: number) {
+  if (assetClass === "crypto") return "#55e6a5";
+  if (assetClass === "commodity") return "#e0b33f";
+  if (assetClass === "forex") return "#f05fa6";
+  if (change < 0) return "#ff6f7e";
+  return "#58a6ff";
 }
