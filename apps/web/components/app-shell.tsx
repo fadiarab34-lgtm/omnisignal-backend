@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Activity, BrainCircuit, BriefcaseBusiness, Settings, Tickets } from "lucide-react";
 import { ConnectWalletButton } from "./connect-wallet-button";
 import { PremiumUpgradeButton } from "./premium-upgrade-button";
+import { MarketTape } from "./market-tape";
 
 const nav = [
   { href: "/portal/intelligence", label: "Intelligence", icon: BrainCircuit },
@@ -40,6 +41,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <ConnectWalletButton />
         </div>
       </header>
+      <MarketTape compact />
       <main className="portal-main">{children}</main>
     </div>
   );
