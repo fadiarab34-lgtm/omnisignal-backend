@@ -4,7 +4,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
 import { apiFetch, formatPct, formatUsd } from "../lib/api";
-import { WalletGate } from "./wallet-gate";
+import { useWalletStore } from "../stores/wallet-store";
+import { ConnectWalletButton } from "./connect-wallet-button";
 
 type Portfolio = {
   id: string;
@@ -18,71 +19,100 @@ type Portfolio = {
 };
 
 export function PortfolioList() {
-  const [name, setName] = useState("Simulation Portfolio");
+  const [name, setName] = useState("");
+  const address = useWalletStore((state) => state.address);
+  const error = useWalletStore((state) => state.error);
   const queryClient = useQueryClient();
   const portfolios = useQuery({
     queryKey: ["portfolios"],
-    queryFn: () => apiFetch<{ portfolios: Portfolio[] }>("/portfolio")
+    queryFn: () => apiFetch<{ portfolios: Portfolio[] }>("/portfolio"),
+    enabled: Boolean(address)
   });
   const create = useMutation({
     mutationFn: () => apiFetch<{ portfolio: Portfolio }>("/portfolio", {
       method: "POST",
-      body: JSON.stringify({ name, mode: "simulation" })
+      body: JSON.stringify({ name: name.trim(), mode: "simulation" })
     }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["portfolios"] })
   });
 
-  return (
-    <WalletGate>
-      <section className="panel">
-        <div className="panel-head">
-          <div>
-            <div className="panel-title">Wallet Portfolios</div>
-            <div className="panel-sub">Only database records owned by the verified wallet appear here.</div>
+  if (!address) {
+    return (
+      <div className="portfolio-terminal">
+        <aside className="portfolio-rail">
+          <h2>My Portfolios</h2>
+          <div className="wallet-mini-state">
+            <div className="lock-icon">Lock</div>
+            <b>Wallet not connected</b>
+            <p>Connect MetaMask to unlock saved portfolios.</p>
+            <ConnectWalletButton />
           </div>
+        </aside>
+        <main className="portfolio-empty-main">
+          <div className="portfolio-empty-card">
+            <div className="lock-icon large">Lock</div>
+            <h1>Connect wallet to view portfolios</h1>
+            <p>Your portfolio list, allocations, pending trades, AI analysis, and immersive universe stay hidden until MetaMask is connected.</p>
+            <ConnectWalletButton />
+            {error && <p className="down">{error}</p>}
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  return (
+    <div className="portfolio-terminal">
+      <aside className="portfolio-rail">
+        <div className="portfolio-rail-head">
+          <h2>My Portfolios</h2>
+          <button onClick={() => create.mutate()} disabled={create.isPending || !name.trim()}>+ New</button>
         </div>
-        <div className="panel-body">
-          {portfolios.isLoading && <div className="state"><strong>Loading portfolios</strong>Reading wallet-linked database records.</div>}
-          {portfolios.isError && <div className="state"><strong>Portfolio unavailable</strong>{(portfolios.error as Error).message}</div>}
-          {portfolios.data?.portfolios.length === 0 && (
-            <div className="state">
-              <div>
-                <strong>No portfolio yet.</strong>
-                <p>Create a simulation portfolio, then add positions backed by live prices.</p>
-                <div className="form-grid" style={{ marginTop: 16 }}>
-                  <div className="field"><label>Name</label><input value={name} onChange={(event) => setName(event.target.value)} /></div>
-                  <button className="primary-btn" onClick={() => create.mutate()} disabled={create.isPending}>Create simulated portfolio</button>
-                </div>
-                {create.isError && <p className="down">{(create.error as Error).message}</p>}
-              </div>
+        <div className="portfolio-create-inline">
+          <label>New simulation</label>
+          <input value={name} onChange={(event) => setName(event.target.value)} />
+        </div>
+        {portfolios.isLoading && <p className="empty-terminal-line">Loading wallet-linked portfolios.</p>}
+        {portfolios.isError && <p className="empty-terminal-line">{(portfolios.error as Error).message}</p>}
+        {portfolios.data?.portfolios.map((portfolio) => (
+          <Link key={portfolio.id} href={`/portal/portfolio/${portfolio.id}`} className="portfolio-rail-item">
+            <b>{portfolio.name}</b>
+            <span>{formatUsd(portfolio.totalValue)} <em className={portfolio.dailyChangePercent >= 0 ? "healthy" : "down"}>{formatPct(portfolio.dailyChangePercent)}</em></span>
+          </Link>
+        ))}
+      </aside>
+      <main className="portfolio-list-main">
+        {portfolios.data?.portfolios.length === 0 && (
+          <div className="portfolio-empty-card">
+            <h1>No portfolio yet.</h1>
+            <p>Create a simulated portfolio record owned by this verified wallet. No holdings appear until you add real positions backed by provider prices.</p>
+            <div className="portfolio-create-wide">
+              <input value={name} onChange={(event) => setName(event.target.value)} />
+              <button className="primary-btn" onClick={() => create.mutate()} disabled={create.isPending || !name.trim()}>Create simulated portfolio</button>
             </div>
-          )}
-          {Boolean(portfolios.data?.portfolios.length) && (
-            <>
-              <div className="form-grid" style={{ marginBottom: 14 }}>
-                <div className="field"><label>New simulation portfolio</label><input value={name} onChange={(event) => setName(event.target.value)} /></div>
-                <button className="primary-btn" onClick={() => create.mutate()} disabled={create.isPending}>Create</button>
-              </div>
-              <div className="card-grid">
-                {portfolios.data!.portfolios.map((portfolio) => (
-                  <Link href={`/portal/portfolio/${portfolio.id}`} className="portfolio-card" key={portfolio.id}>
-                    <div>
-                      <h3>{portfolio.name}</h3>
-                      <p className="panel-sub">{portfolio.mode} · {portfolio.positions.length} positions</p>
-                    </div>
-                    <div className="metric-row">
-                      <div className="metric"><span>Total</span><strong>{formatUsd(portfolio.totalValue)}</strong></div>
-                      <div className="metric"><span>Day</span><strong className={portfolio.dailyChangePercent >= 0 ? "healthy" : "down"}>{formatPct(portfolio.dailyChangePercent)}</strong></div>
-                      <div className="metric"><span>Risk</span><strong>{portfolio.riskScore === null ? "N/A" : portfolio.riskScore.toFixed(0)}</strong></div>
-                    </div>
-                    <div className="panel-sub">Top holdings: {portfolio.positions.slice(0, 3).map((position) => `${position.symbol} ${position.allocationPercent.toFixed(1)}%`).join(" · ") || "No positions"}</div>
-                  </Link>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-      </section>
-    </WalletGate>
+            {create.isError && <p className="down">{(create.error as Error).message}</p>}
+          </div>
+        )}
+        {Boolean(portfolios.data?.portfolios.length) && (
+          <div className="portfolio-card-grid">
+            {portfolios.data!.portfolios.map((portfolio) => (
+              <Link href={`/portal/portfolio/${portfolio.id}`} className="portfolio-terminal-card" key={portfolio.id}>
+                <div>
+                  <span>{portfolio.mode}</span>
+                  <h2>{portfolio.name}</h2>
+                  <p>{portfolio.positions.length} positions</p>
+                </div>
+                <div className="portfolio-card-metrics">
+                  <div><span>Value</span><b>{formatUsd(portfolio.totalValue)}</b></div>
+                  <div><span>Day</span><b className={portfolio.dailyChangePercent >= 0 ? "healthy" : "down"}>{formatPct(portfolio.dailyChangePercent)}</b></div>
+                  <div><span>Risk</span><b>{portfolio.riskScore === null ? "N/A" : portfolio.riskScore.toFixed(0)}</b></div>
+                </div>
+                <p>Top holdings: {portfolio.positions.slice(0, 4).map((position) => `${position.symbol} ${position.allocationPercent.toFixed(1)}%`).join(" / ") || "No positions yet"}</p>
+              </Link>
+            ))}
+          </div>
+        )}
+      </main>
+    </div>
   );
 }
