@@ -6,10 +6,10 @@ export default function PortalHome() {
       <section className="portal-command-hero">
         <div>
           <div className="section-badge">OmniSignal Portal</div>
-          <h1>Live intelligence, wallet portfolios, and safety-gated trading.</h1>
+          <h1>AI Oracle cockpit for geopolitical market signals.</h1>
           <p>
-            Use the command center to open the global heatmap, verify your wallet, create real database-backed
-            portfolios, check premium status, and prepare order tickets through the backend.
+            Start with the Oracle Pool. It reads live signals, ranks geopolitical and social catalysts,
+            separates majority report from contrarian view, maps asset impact, and lets you simulate before approval.
           </p>
         </div>
         <div className="portal-command-orbit" aria-hidden="true">
@@ -20,24 +20,24 @@ export default function PortalHome() {
       </section>
       <div className="portal-command-grid">
         <Link className="command-card primary" href="/portal/intelligence">
-          <span>01 - Intelligence</span>
-          <h3>Global Heatmap</h3>
-          <p>Provider-backed tiles, asset detail, real candles, stored events, and OpenAI analysis.</p>
+          <span>01 - Oracle Pool</span>
+          <h3>AI Intelligence Desk</h3>
+          <p>Oracle cards from real normalized signals: news, geo risk, leader posts, social velocity, PolyDelta, and market data.</p>
+        </Link>
+        <Link className="command-card" href="/portal/intelligence">
+          <span>02 - Geo Risk</span>
+          <h3>World Events to Assets</h3>
+          <p>Conflicts, sanctions, elections, central banks, export controls, and energy shocks mapped to sectors and tickers.</p>
         </Link>
         <Link className="command-card" href="/portal/portfolio">
-          <span>02 - Wallet</span>
-          <h3>Portfolio Engine</h3>
-          <p>Hidden until MetaMask signs a nonce. Portfolios are real records owned by the verified wallet.</p>
-        </Link>
-        <Link className="command-card" href="/portal/trading">
-          <span>03 - Execution</span>
-          <h3>Trading Controls</h3>
-          <p>Order estimates, intents, Hyperliquid testnet confirmation, and mainnet kill-switch gates.</p>
+          <span>03 - Portfolio Exposure</span>
+          <h3>Wallet-Gated Strategy</h3>
+          <p>No holdings appear before MetaMask verification. Connected portfolios receive relevant Oracle exposure notes.</p>
         </Link>
         <Link className="command-card" href="/portal/settings">
-          <span>04 - Status</span>
-          <h3>Providers & Premium</h3>
-          <p>Database, Redis, OpenAI, market providers, wallet subscription, and Telegram AI readiness.</p>
+          <span>04 - Simulation & Approval</span>
+          <h3>Provider Status</h3>
+          <p>Check database, Redis, OpenAI, market providers, premium wallet unlock, Telegram, and no-fallback data readiness.</p>
         </Link>
       </div>
     </div>
