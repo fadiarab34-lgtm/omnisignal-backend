@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { LockKeyhole } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { apiFetch, formatPct, formatUsd } from "../lib/api";
@@ -83,8 +84,8 @@ export function PortfolioDetail({ id }: { id: string }) {
   if (!address) {
     return (
       <div className="portfolio-terminal">
-        <aside className="portfolio-rail"><h2>My Portfolios</h2><div className="wallet-mini-state"><div className="lock-icon">Lock</div><b>Wallet not connected</b><p>Connect MetaMask to unlock saved portfolios.</p><ConnectWalletButton /></div></aside>
-        <main className="portfolio-empty-main"><div className="portfolio-empty-card"><div className="lock-icon large">Lock</div><h1>Connect wallet to view portfolios</h1><p>Your portfolio list, allocations, pending trades, AI analysis and universe stay hidden until MetaMask is connected.</p><ConnectWalletButton /></div></main>
+        <aside className="portfolio-rail"><h2>My Portfolios</h2><div className="wallet-mini-state"><div className="lock-icon"><LockKeyhole size={22} /></div><b>Wallet not connected</b><p>Connect MetaMask to unlock saved portfolios.</p><ConnectWalletButton /></div></aside>
+        <main className="portfolio-empty-main"><div className="portfolio-empty-card"><div className="lock-icon large"><LockKeyhole size={28} /></div><h1>Connect wallet to view portfolios</h1><p>Your portfolio list, allocations, pending trades, AI analysis and universe stay hidden until MetaMask is connected.</p><ConnectWalletButton /></div></main>
       </div>
     );
   }
