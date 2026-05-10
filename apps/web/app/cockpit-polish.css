@@ -1,0 +1,340 @@
+/* Final cockpit polish loaded after the base terminal stylesheet. */
+.portal-shell {
+  background:
+    linear-gradient(180deg, rgba(19, 25, 33, .98), rgba(7, 10, 15, 1) 120px),
+    #070a0f;
+}
+
+.portal-shell .topbar {
+  height: 48px;
+  padding: 0 16px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .02);
+}
+
+.portal-shell .brand {
+  min-width: 136px;
+  font-size: 18px;
+}
+
+.portal-shell .brand-dot {
+  width: 18px;
+  height: 18px;
+  background: #3f6597;
+}
+
+.portal-shell .portal-nav {
+  gap: 6px;
+}
+
+.portal-shell .portal-nav a {
+  min-height: 34px;
+  padding: 0 13px;
+  color: #8c929d;
+  font-size: 16px;
+}
+
+.portal-shell .portal-nav a[data-active="true"] {
+  color: #69a8ff;
+  background: #1b2d4b;
+  box-shadow: inset 0 0 0 1px rgba(105, 168, 255, .08);
+}
+
+.wallet-btn {
+  min-height: 36px;
+  border-radius: 7px;
+  background: #3f8545;
+  font-size: 16px;
+}
+
+.wallet-btn.connected {
+  background: #3978df;
+}
+
+.tape-bar.compact {
+  top: 48px;
+  height: 27px;
+  background: #070b10;
+}
+
+.tape-bar.compact .tape-item {
+  min-width: 128px;
+  height: 27px;
+  gap: 6px;
+  padding: 0 10px;
+}
+
+.tape-bar.compact .tape-status {
+  height: 27px;
+  display: grid;
+  place-items: center;
+  color: #8e97a4;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+}
+
+.portal-main {
+  min-height: calc(100vh - 75px);
+}
+
+.terminal-workspace {
+  grid-template-columns: 402px minmax(0, 1fr) 304px;
+  min-height: calc(100vh - 75px);
+  background:
+    linear-gradient(90deg, rgba(25, 40, 61, .28), transparent 22%, transparent 78%, rgba(25, 40, 61, .22)),
+    #080c11;
+}
+
+.terminal-left,
+.terminal-right,
+.portfolio-rail,
+.risk-left,
+.herd-left {
+  background: #131820;
+}
+
+.terminal-tabs {
+  height: 39px;
+  background: #141920;
+}
+
+.terminal-tabs button {
+  color: #7e8793;
+  font-size: 11px;
+  letter-spacing: 3px;
+}
+
+.terminal-left-body,
+.portfolio-detail-main,
+.terminal-main,
+.risk-main,
+.herd-main {
+  scrollbar-color: #2c3440 transparent;
+}
+
+.terminal-main {
+  padding: 18px 16px 124px;
+  background:
+    radial-gradient(circle at 50% 0, rgba(64, 125, 210, .1), transparent 260px),
+    #090d12;
+}
+
+.terminal-section-head {
+  grid-template-columns: minmax(0, 1fr) minmax(560px, auto);
+  margin-bottom: 12px;
+}
+
+.terminal-section-head h1 {
+  font-size: 16px;
+}
+
+.terminal-section-head p {
+  max-width: 720px;
+  color: #858f9c;
+}
+
+.terminal-filter-row button {
+  min-height: 36px;
+  padding: 0 13px;
+  background: #181e26;
+  color: #818895;
+  border-color: #242b35;
+  font-size: 17px;
+}
+
+.terminal-filter-row button.active {
+  color: #6facff;
+  background: #172a48;
+  border-color: #5b9eff;
+}
+
+.terminal-heatmap-scroll {
+  gap: 11px;
+}
+
+.terminal-heatmap-cluster {
+  min-height: 206px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #121820, #10151c);
+}
+
+.terminal-asset-tile {
+  border-radius: 10px;
+  box-shadow: inset 0 -2px 0 rgba(255,255,255,.05);
+}
+
+.terminal-asset-tile b {
+  font-size: 20px;
+}
+
+.terminal-state-card {
+  position: relative;
+  min-height: min(620px, calc(100vh - 210px));
+  overflow: hidden;
+  border-color: #202832;
+  border-radius: 16px;
+  background:
+    linear-gradient(rgba(110, 168, 255, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(110, 168, 255, .026) 1px, transparent 1px),
+    radial-gradient(circle at center, rgba(88, 166, 255, .08), transparent 260px),
+    #090d12;
+  background-size: 58px 58px, 58px 58px, auto, auto;
+}
+
+.terminal-state-card::after {
+  content: "";
+  position: absolute;
+  inset: 22px;
+  border: 1px solid rgba(88, 166, 255, .08);
+  border-radius: 14px;
+  pointer-events: none;
+}
+
+.terminal-state-card b {
+  color: #e7edf6;
+  font-size: 20px;
+}
+
+.terminal-state-card p {
+  max-width: 520px;
+  color: #8f98a5;
+  line-height: 1.6;
+}
+
+.terminal-bottom-read {
+  position: sticky;
+  bottom: 0;
+  z-index: 4;
+  padding-bottom: 0;
+}
+
+.terminal-bottom-read div {
+  min-height: 86px;
+  border-radius: 12px;
+  background: #131820;
+}
+
+.terminal-workspace .terminal-footer {
+  position: absolute;
+}
+
+.oracle-summary-card {
+  border-color: #1d3455;
+  background: #111820;
+}
+
+.signal-stack,
+.watchlist-panel,
+.quick-deploy {
+  background: #131820;
+}
+
+.rail-card:hover,
+.watchlist-panel button:hover,
+.portfolio-rail-item:hover,
+.risk-zone-link:hover {
+  background: rgba(91, 158, 255, .06);
+}
+
+.portfolio-terminal {
+  min-height: calc(100vh - 75px);
+  background: #090d12;
+}
+
+.portfolio-rail {
+  min-height: calc(100vh - 75px);
+}
+
+.portfolio-empty-main {
+  min-height: calc(100vh - 75px);
+  background:
+    radial-gradient(circle at 50% 48%, rgba(74, 118, 178, .09), transparent 280px),
+    #090d12;
+}
+
+.portfolio-empty-card {
+  width: min(680px, 88%);
+  min-height: 300px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #151a22, #11161d);
+  border-color: #252d38;
+}
+
+.portfolio-empty-card h1 {
+  font-size: 26px;
+  line-height: 1.2;
+}
+
+.lock-icon {
+  color: #e9edf4;
+  background: #0d1219;
+}
+
+.lock-icon.large {
+  background: #172a48;
+}
+
+.portfolio-create-inline input,
+.portfolio-create-wide input,
+.quick-deploy input,
+.add-position-grid input,
+.add-position-grid select,
+.field input {
+  background: #090e14;
+  border-color: #2b333f;
+}
+
+.portfolio-terminal-card,
+.terminal-card,
+.portfolio-graph-card,
+.universe-callout {
+  background: #131820;
+  border-color: #252d37;
+}
+
+.bubble-graph {
+  height: 368px;
+  background:
+    radial-gradient(circle at center, rgba(88, 166, 255, .08), transparent 230px),
+    #090d12;
+}
+
+.universe-page {
+  min-height: calc(100vh - 75px);
+}
+
+.universe-command-bar {
+  min-height: 88px;
+  background: linear-gradient(180deg, #111821, #080c11);
+}
+
+.universe-main {
+  min-height: calc(100vh - 163px);
+}
+
+.universe-canvas {
+  background:
+    radial-gradient(circle at 50% 52%, rgba(88, 166, 255, .16), transparent 150px),
+    radial-gradient(circle at 72% 25%, rgba(190, 100, 180, .08), transparent 220px),
+    linear-gradient(rgba(95, 158, 255, .018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(95, 158, 255, .014) 1px, transparent 1px),
+    #02060b;
+  background-size: auto, auto, 70px 70px, 70px 70px, auto;
+}
+
+.universe-asset-panel {
+  width: 474px;
+  background: rgba(19, 24, 32, .97);
+}
+
+.risk-workspace,
+.herd-workspace {
+  min-height: calc(100vh - 75px);
+  background: #090d12;
+}
+
+.risk-main,
+.herd-main {
+  max-height: calc(100vh - 75px);
+}
