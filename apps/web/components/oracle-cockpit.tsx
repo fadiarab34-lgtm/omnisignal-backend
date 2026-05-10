@@ -201,7 +201,7 @@ export function OracleCockpit() {
 
         {heatmap.isLoading && <TerminalState title="Loading live heatmap" body="Querying configured market providers through the backend." />}
         {heatmap.isError && <TerminalState title="Live market data unavailable" body={(heatmap.error as Error).message} danger />}
-        {heatmap.data && assets.length === 0 && <TerminalState title="No heatmap tiles available" body="Live market data unavailable. Check provider configuration." />}
+        {heatmap.data && assets.length === 0 && <TerminalState title="Live market data unavailable" body="Check provider configuration. OmniSignal will not draw substitute heatmap tiles." />}
 
         <div className="terminal-heatmap-scroll">
           {groupedHeatmap.map(([group, groupAssets]) => {
