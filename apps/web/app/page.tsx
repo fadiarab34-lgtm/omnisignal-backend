@@ -135,21 +135,32 @@ export default function WatchStorePage() {
   return (
     <main className="watch-page">
       <div className="mk-top">
-        <a href="#checkout">Want to buy with crypto? Checkout with Base USDC.</a>
+        <a href="#checkout">Private crypto checkout / Base USDC accepted / On-chain receipt</a>
         <nav>
           <a href="#sell">Sell Now</a>
           <a href="#stores">Find a Store</a>
           <a href="#help">Help</a>
           <a href="#journal">Blog</a>
+          <a href="#region">UAE / AED</a>
         </nav>
       </div>
 
       <header className="mk-header">
-        <button className="mk-menu" aria-label="Open menu">Menu</button>
-        <a className="mk-logo" href="#top">OmniSignal</a>
+        <div className="mk-left-actions">
+          <button className="mk-menu" aria-label="Open menu">Menu</button>
+          <a href="#watches">Shop Watches</a>
+        </div>
+        <a className="mk-logo" href="#top">
+          <b>OmniSignal</b>
+          <span>Authenticated Collectibles</span>
+        </a>
         <div className="mk-actions">
-          <button className="mk-search">Search for a brand, a model...</button>
+          <form className="mk-searchbox">
+            <input aria-label="Search products" placeholder="Search brand, model, reference..." />
+            <button type="button">Search</button>
+          </form>
           <button className="mk-wallet" onClick={connectWallet}>{account ? shortAccount : "Connect Wallet"}</button>
+          <button className="mk-cart">Cart 0</button>
         </div>
       </header>
 
@@ -160,8 +171,9 @@ export default function WatchStorePage() {
         <a href="#bags">Bags</a>
         <a href="#streetwear">Streetwear</a>
         <a href="#accessories">Accessories</a>
-        <a href="#watches">Watches</a>
+        <a className="active" href="#watches">Watches</a>
         <a href="#collectibles">Collectibles</a>
+        <a href="#crypto">Crypto Checkout</a>
       </nav>
 
       <section className="mk-product" id="top">
