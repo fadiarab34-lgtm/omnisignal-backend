@@ -1,0 +1,350 @@
+.watch-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 12%, rgba(210, 224, 255, .18), transparent 26%),
+    radial-gradient(circle at 82% 20%, rgba(221, 186, 112, .18), transparent 22%),
+    linear-gradient(180deg, #08090b, #121419 48%, #08090b);
+  color: #f6f1e8;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.watch-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 clamp(18px, 4vw, 64px);
+  background: rgba(8, 9, 11, .78);
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+  backdrop-filter: blur(18px);
+}
+
+.watch-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 950;
+  letter-spacing: .2px;
+}
+
+.watch-brand span {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: #d6b46a;
+  box-shadow: 0 0 22px rgba(214, 180, 106, .8);
+}
+
+.watch-header nav {
+  display: flex;
+  gap: 18px;
+  color: #a8a395;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.watch-header button,
+.watch-actions a,
+.pay-button,
+.ghost-button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 18px;
+  color: #09090a;
+  background: #f0d488;
+  font-weight: 900;
+}
+
+.watch-hero {
+  display: grid;
+  grid-template-columns: minmax(0, .96fr) minmax(360px, .74fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: center;
+  padding: clamp(54px, 8vw, 108px) clamp(18px, 5vw, 76px) 40px;
+}
+
+.watch-copy {
+  max-width: 760px;
+}
+
+.watch-kicker {
+  margin: 0 0 14px;
+  color: #d6b46a;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.watch-copy h1 {
+  margin: 0;
+  max-width: 760px;
+  font-size: clamp(46px, 7.2vw, 102px);
+  line-height: .94;
+  letter-spacing: 0;
+}
+
+.watch-copy > p:not(.watch-kicker) {
+  max-width: 640px;
+  margin: 24px 0 0;
+  color: #c7c0b2;
+  font-size: clamp(16px, 1.8vw, 20px);
+  line-height: 1.75;
+}
+
+.watch-price-line {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 610px;
+  margin-top: 30px;
+}
+
+.watch-price-line div,
+.order-summary,
+.checkout-card,
+.watch-details article,
+.watch-product-card {
+  border: 1px solid rgba(255, 255, 255, .12);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .035));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, .32);
+  backdrop-filter: blur(18px);
+}
+
+.watch-price-line div {
+  min-height: 94px;
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.watch-price-line span,
+.order-summary span,
+.watch-details span {
+  display: block;
+  color: #958e80;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.watch-price-line strong {
+  display: block;
+  margin-top: 8px;
+  color: #fff7e8;
+  font-size: clamp(24px, 3vw, 34px);
+}
+
+.watch-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.watch-actions a:last-child,
+.ghost-button {
+  border: 1px solid rgba(255, 255, 255, .16);
+  color: #f7f2e8;
+  background: rgba(255, 255, 255, .06);
+}
+
+.watch-product-card {
+  border-radius: 32px;
+  overflow: hidden;
+}
+
+.watch-image-shell {
+  min-height: 520px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, .28), transparent 36%),
+    linear-gradient(145deg, #ded8c8, #8f918e);
+}
+
+.watch-image-shell img {
+  width: min(86%, 520px);
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 35px 55px rgba(0, 0, 0, .36));
+}
+
+.watch-card-meta {
+  padding: 24px;
+}
+
+.watch-card-meta span {
+  color: #d6b46a;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.watch-card-meta h2 {
+  margin: 10px 0;
+  font-size: 25px;
+  line-height: 1.15;
+}
+
+.watch-card-meta p,
+.checkout-note,
+.order-summary p,
+.watch-details p {
+  color: #bdb5a7;
+  line-height: 1.65;
+}
+
+.watch-strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 16px clamp(18px, 5vw, 76px);
+  border-block: 1px solid rgba(255, 255, 255, .09);
+  background: rgba(255, 255, 255, .035);
+}
+
+.watch-strip span {
+  flex: 0 0 auto;
+  padding: 9px 13px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+  color: #d8d0c3;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.watch-checkout-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 18px;
+  padding: clamp(34px, 5vw, 72px) clamp(18px, 5vw, 76px);
+}
+
+.checkout-card,
+.order-summary,
+.watch-details article {
+  border-radius: 24px;
+  padding: clamp(22px, 3vw, 32px);
+}
+
+.checkout-card h2 {
+  margin: 0;
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 1;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.field-grid label {
+  display: grid;
+  gap: 8px;
+  color: #a9a294;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.field-grid input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, .28);
+  color: #fff7e8;
+  outline: none;
+  padding: 0 14px;
+}
+
+.checkout-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.pay-button {
+  min-width: 220px;
+}
+
+.pay-button:disabled {
+  opacity: .68;
+  cursor: progress;
+}
+
+.checkout-status {
+  margin: 18px 0 0;
+  color: #f0d488;
+}
+
+.tx-link {
+  display: inline-flex;
+  margin-top: 12px;
+  color: #f0d488;
+  font-weight: 900;
+}
+
+.order-summary {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.order-summary h3 {
+  margin: 0 0 8px;
+  font-size: 24px;
+}
+
+.order-summary div {
+  display: grid;
+  gap: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+
+.order-summary b {
+  overflow-wrap: anywhere;
+}
+
+.watch-details {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  padding: 0 clamp(18px, 5vw, 76px) clamp(48px, 6vw, 90px);
+}
+
+.watch-details h3 {
+  margin: 12px 0 8px;
+  font-size: 22px;
+}
+
+@media (max-width: 980px) {
+  .watch-header nav {
+    display: none;
+  }
+
+  .watch-hero,
+  .watch-checkout-grid,
+  .watch-details,
+  .field-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .watch-price-line {
+    grid-template-columns: 1fr;
+  }
+
+  .watch-image-shell {
+    min-height: 380px;
+  }
+}
