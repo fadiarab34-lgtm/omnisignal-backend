@@ -20,14 +20,7 @@ const PRODUCT_IMAGES = [
   "https://cdn.shopify.com/s/files/1/0640/3846/9846/files/Swatch_Audemars_Piguet_Royal_Pop_Collection_Pocket_Watch_Huit_Blanc_3_webp.png?quality=75&v=1778746913%3Fwidth%3D3840"
 ];
 
-const COLOR_OPTIONS = [
-  { name: "Eight White", active: true, color: "#f7f7f2" },
-  { name: "Otto Rosso", active: false, color: "#d63b38" },
-  { name: "Green Eight", active: false, color: "#297b51" },
-  { name: "Orenji Hachi", active: false, color: "#f39a33" },
-  { name: "Lan Ba", active: false, color: "#326ed8" },
-  { name: "Ocho Negro", active: false, color: "#111111" }
-];
+const OPTIONS = ["Eight White", "Otto Rosso", "Green Eight", "Orenji Hachi", "Lan Ba", "Ocho Negro"];
 
 export default function WatchStorePage() {
   const [account, setAccount] = useState("");
@@ -37,6 +30,7 @@ export default function WatchStorePage() {
   const [status, setStatus] = useState("");
   const [txHash, setTxHash] = useState("");
   const [busy, setBusy] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(PRODUCT_IMAGES[0]);
 
   const shortAccount = useMemo(() => {
     if (!account) return "";
@@ -133,174 +127,206 @@ export default function WatchStorePage() {
   }
 
   return (
-    <main className="watch-page">
-      <div className="mk-top">
-        <a href="#checkout">Private crypto checkout / Base USDC accepted / On-chain receipt</a>
-        <nav>
+    <>
+      <div className="utility-bar">
+        <a href="#checkout">Private Base USDC checkout / on-chain receipt / no card processor</a>
+      </div>
+
+      <div className="top-bar">
+        <div className="container">
           <a href="#sell">Sell Now</a>
           <a href="#stores">Find a Store</a>
           <a href="#help">Help</a>
           <a href="#journal">Blog</a>
           <a href="#region">UAE / AED</a>
-        </nav>
+        </div>
       </div>
 
-      <header className="mk-header">
-        <div className="mk-left-actions">
-          <button className="mk-menu" aria-label="Open menu">Menu</button>
-          <a href="#watches">Shop Watches</a>
-        </div>
-        <a className="mk-logo" href="#top">
-          <b>OmniSignal</b>
-          <span>Authenticated Collectibles</span>
-        </a>
-        <div className="mk-actions">
-          <form className="mk-searchbox">
-            <input aria-label="Search products" placeholder="Search brand, model, reference..." />
-            <button type="button">Search</button>
-          </form>
-          <button className="mk-wallet" onClick={connectWallet}>{account ? shortAccount : "Connect Wallet"}</button>
-          <button className="mk-cart">Cart 0</button>
+      <header className="site-header">
+        <div className="container">
+          <nav className="nav-left">
+            <a href="#menu">Menu</a>
+            <a href="#watches">Shop Watches</a>
+          </nav>
+          <a className="logo" href="#top">
+            OmniSignal
+            <small>Authenticated Collectibles</small>
+          </a>
+          <nav className="nav-right">
+            <button onClick={connectWallet}>{account ? shortAccount : "Connect Wallet"}</button>
+            <a className="cart-pill" href="#checkout">Cart 0</a>
+          </nav>
         </div>
       </header>
 
-      <nav className="mk-nav">
-        <a href="#sale">Summer Sale</a>
-        <a href="#new">New Releases</a>
-        <a href="#sneakers">Sneakers</a>
-        <a href="#bags">Bags</a>
-        <a href="#streetwear">Streetwear</a>
-        <a href="#accessories">Accessories</a>
-        <a className="active" href="#watches">Watches</a>
-        <a href="#collectibles">Collectibles</a>
-        <a href="#crypto">Crypto Checkout</a>
+      <nav className="cat-nav">
+        <div className="container">
+          <ul>
+            <li><a href="#sale">Summer Sale</a></li>
+            <li><a href="#new">New Releases</a></li>
+            <li><a href="#sneakers">Sneakers</a></li>
+            <li><a href="#bags">Bags</a></li>
+            <li><a href="#streetwear">Streetwear</a></li>
+            <li><a href="#accessories">Accessories</a></li>
+            <li><a href="#watches">Watches</a></li>
+            <li><a href="#crypto">Crypto Checkout</a></li>
+          </ul>
+        </div>
       </nav>
 
-      <section className="mk-product" id="top">
-        <div className="mk-gallery">
-          {PRODUCT_IMAGES.map((image, index) => (
-            <figure className={index === 0 ? "mk-photo large" : "mk-photo"} key={image}>
-              <img src={image} alt={`${PRODUCT_NAME} product view ${index + 1}`} />
-              {index === 0 && <span>New</span>}
-            </figure>
-          ))}
+      <main id="top" className="container">
+        <div className="breadcrumb">
+          <a href="#home">Home</a> / <a href="#accessories">Accessories</a> / Watches / Swatch x Audemars Piguet
         </div>
 
-        <aside className="mk-buybox">
-          <div className="mk-breadcrumb">Home / Accessories / Watches / Swatch x Audemars Piguet</div>
-          <h1>{PRODUCT_NAME}</h1>
-          <div className="mk-price">
-            <span>From</span>
-            <strong>AED {SELL_PRICE_AED.toLocaleString("en-US")}</strong>
+        <section className="product">
+          <div className="gallery">
+            <div className="main">
+              <img src={selectedImage} alt={PRODUCT_NAME} />
+              <span className="tag-new">New</span>
+            </div>
+            <div className="thumbs">
+              {PRODUCT_IMAGES.map((image, index) => (
+                <button
+                  className={selectedImage === image ? "active" : ""}
+                  key={image}
+                  onClick={() => setSelectedImage(image)}
+                  aria-label={`View product image ${index + 1}`}
+                >
+                  <img src={image} alt="" />
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="mk-option-head">
-            <span>Option</span>
-            <b>Eight White</b>
-          </div>
-          <div className="mk-options">
-            {COLOR_OPTIONS.map((option) => (
-              <button className={option.active ? "active" : ""} key={option.name} title={option.name}>
-                <span style={{ background: option.color }} />
-              </button>
-            ))}
-          </div>
+          <aside className="buy-panel" id="checkout">
+            <div className="eyebrow">Swatch x Audemars Piguet / Royal Pop</div>
+            <h1>{PRODUCT_NAME}</h1>
 
-          <div className="mk-paypanel" id="checkout">
-            <label>
-              Full name
+            <div className="price-row">
+              <span className="label">From</span>
+              <span className="price">AED {SELL_PRICE_AED.toLocaleString("en-US")}</span>
+            </div>
+
+            <div className="field">
+              <label>Option</label>
+              <div className="option-chips">
+                {OPTIONS.map((option) => (
+                  <button className={option === "Eight White" ? "active" : ""} key={option}>{option}</button>
+                ))}
+              </div>
+            </div>
+
+            <div className="field">
+              <label>Full name</label>
               <input value={buyerName} onChange={(event) => setBuyerName(event.target.value)} placeholder="Your name" />
-            </label>
-            <label>
-              WhatsApp or email
+            </div>
+            <div className="field">
+              <label>WhatsApp or email</label>
               <input value={buyerContact} onChange={(event) => setBuyerContact(event.target.value)} placeholder="Contact for delivery" />
-            </label>
-            <label>
-              Delivery city
+            </div>
+            <div className="field">
+              <label>Delivery city</label>
               <input value={shippingCity} onChange={(event) => setShippingCity(event.target.value)} placeholder="Dubai, Abu Dhabi, Riyadh..." />
-            </label>
-          </div>
+            </div>
 
-          <button className="mk-add" onClick={payWithUsdc} disabled={busy}>
-            {busy ? "Opening MetaMask..." : "Pay with crypto"}
-          </button>
-          <button className="mk-connect" onClick={connectWallet}>
-            {account ? `Wallet ${shortAccount}` : "Connect MetaMask"}
-          </button>
+            <button className="btn btn-primary" onClick={payWithUsdc} disabled={busy}>
+              {busy ? "Opening MetaMask..." : "Pay with crypto"}
+            </button>
+            <button className="btn btn-secondary" onClick={connectWallet}>
+              {account ? `Wallet ${shortAccount}` : "Connect MetaMask"}
+            </button>
 
-          <div className="mk-loyalty">OmniSignal checkout: {USDC_PRICE.toLocaleString("en-US", { maximumFractionDigits: 2 })} USDC on Base.</div>
-          <div className="mk-splitpay">No Stripe. No card processor. Buyer pays directly from wallet.</div>
+            <div className="crypto-box">
+              <div className="line">OmniSignal crypto checkout</div>
+              <strong>{USDC_PRICE.toLocaleString("en-US", { maximumFractionDigits: 2 })} USDC on Base</strong>
+              <p className="line">No Stripe. No card processor. Buyer pays directly from wallet.</p>
+              <div className="wallet">
+                <span>{TREASURY_ADDRESS}</span>
+                <button onClick={copyReceivingWallet}>Copy</button>
+              </div>
+            </div>
 
-          <div className="mk-wallet-box">
-            <span>Receiving wallet</span>
-            <b>{TREASURY_ADDRESS}</b>
-            <button onClick={copyReceivingWallet}>Copy wallet</button>
-          </div>
-          {status && <p className="mk-status">{status}</p>}
-          {txHash && (
-            <a className="mk-receipt" href={`${BASE_EXPLORER}/tx/${txHash}`} target="_blank" rel="noreferrer">
-              View transaction receipt
-            </a>
-          )}
-        </aside>
-      </section>
+            {status && <p className="crypto-box">{status}</p>}
+            {txHash && (
+              <a className="btn btn-secondary" href={`${BASE_EXPLORER}/tx/${txHash}`} target="_blank" rel="noreferrer">
+                View transaction receipt
+              </a>
+            )}
+          </aside>
+        </section>
+      </main>
 
-      <section className="mk-content">
-        <article>
-          <h2>Discover this product</h2>
+      <section className="section">
+        <div className="container">
+          <h3>Discover this product</h3>
+          <h2>Eight White, presented as a collectible watch checkout for crypto-native buyers.</h2>
           <p>
             The Royal Pop Pocket Watch "Eight White" brings a crisp white finish to a collectible
             pocket watch format with Royal Oak inspired octagonal design elements.
           </p>
-          <ul>
+          <ul className="bullets">
             <li>Eight White colorway with clean pop inspired detailing</li>
             <li>Royal Oak inspired octagonal design elements</li>
             <li>Unique pocket watch format with collectible appeal</li>
             <li>Crypto-only OmniSignal checkout on Base USDC</li>
           </ul>
-        </article>
-        <details open>
-          <summary>Authenticity</summary>
-          <p>Every order is reviewed before fulfillment. This is an independent resale listing.</p>
-        </details>
-        <details>
-          <summary>Shipping and returns</summary>
-          <p>Delivery is confirmed after the on-chain payment and buyer contact details are matched.</p>
-        </details>
-        <details>
-          <summary>Payment methods</summary>
-          <p>MetaMask, Base mainnet, and USDC. The site never asks for seed phrases or private keys.</p>
-        </details>
+
+          <div className="info-grid">
+            <div>
+              <h3>Authenticity</h3>
+              <p>Every order is reviewed before fulfillment. This is an independent resale listing.</p>
+            </div>
+            <div>
+              <h3>Shipping</h3>
+              <p>Delivery is confirmed after the on-chain payment and buyer contact details are matched.</p>
+            </div>
+            <div>
+              <h3>Payment</h3>
+              <p>MetaMask, Base mainnet, and USDC. The site never asks for seed phrases or private keys.</p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className="mk-newsletter">
-        <div>
-          <h2>Do not miss out on the latest.</h2>
+      <section className="newsletter">
+        <div className="container">
+          <h2>Do not miss the next private watch drop.</h2>
           <p>Get first access to new watch drops, crypto checkout releases, and private listings.</p>
+          <form>
+            <input placeholder="Enter your email" />
+            <button type="button">Submit</button>
+          </form>
         </div>
-        <form>
-          <input placeholder="Enter your email" />
-          <button type="button">Submit</button>
-        </form>
       </section>
 
-      <footer className="mk-footer">
-        <div>
-          <h3>About OmniSignal</h3>
-          <p>Crypto-native checkout for collectible watches and rare pieces.</p>
-        </div>
-        <div>
-          <h3>Customer Care</h3>
-          <a href="#help">Shipping and delivery</a>
-          <a href="#help">FAQ</a>
-          <a href="#help">Contact us</a>
-        </div>
-        <div>
-          <h3>Payment</h3>
-          <p>Base USDC, MetaMask, on-chain receipt.</p>
+      <footer className="footer">
+        <div className="container">
+          <div className="cols">
+            <div>
+              <h4>About OmniSignal</h4>
+              <p>Crypto-native checkout for collectible watches and rare pieces.</p>
+            </div>
+            <div>
+              <h4>Customer Care</h4>
+              <ul>
+                <li><a href="#help">Shipping and delivery</a></li>
+                <li><a href="#help">FAQ</a></li>
+                <li><a href="#help">Contact us</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4>Payment</h4>
+              <p>Base USDC, MetaMask, on-chain receipt.</p>
+            </div>
+          </div>
+          <div className="colophon">
+            <span>OmniSignal</span>
+            <span>Independent resale listing</span>
+          </div>
         </div>
       </footer>
-    </main>
+    </>
   );
 }
 
