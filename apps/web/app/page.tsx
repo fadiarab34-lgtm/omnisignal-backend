@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-const PRODUCT_NAME = "Swatch x Audemars Piguet Royal Pop Pocket Watch Eight White";
+const PRODUCT_NAME = "Swatch Audemars Piguet Royal Pop Collection Pocket Watch \"Eight White\"";
 const SOURCE_PRICE_AED = 9700;
 const SELL_PRICE_AED = SOURCE_PRICE_AED * 2;
 const AED_USD_RATE = 3.6725;
@@ -20,6 +20,15 @@ const PRODUCT_IMAGES = [
   "https://cdn.shopify.com/s/files/1/0640/3846/9846/files/Swatch_Audemars_Piguet_Royal_Pop_Collection_Pocket_Watch_Huit_Blanc_3_webp.png?quality=75&v=1778746913%3Fwidth%3D3840"
 ];
 
+const COLOR_OPTIONS = [
+  { name: "Eight White", active: true, color: "#f7f7f2" },
+  { name: "Otto Rosso", active: false, color: "#d63b38" },
+  { name: "Green Eight", active: false, color: "#297b51" },
+  { name: "Orenji Hachi", active: false, color: "#f39a33" },
+  { name: "Lan Ba", active: false, color: "#326ed8" },
+  { name: "Ocho Negro", active: false, color: "#111111" }
+];
+
 export default function WatchStorePage() {
   const [account, setAccount] = useState("");
   const [buyerName, setBuyerName] = useState("");
@@ -28,14 +37,11 @@ export default function WatchStorePage() {
   const [status, setStatus] = useState("");
   const [txHash, setTxHash] = useState("");
   const [busy, setBusy] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(PRODUCT_IMAGES[0]);
 
   const shortAccount = useMemo(() => {
     if (!account) return "";
     return `${account.slice(0, 6)}...${account.slice(-4)}`;
   }, [account]);
-
-  const checkoutStage = txHash ? 4 : account && buyerName && buyerContact && shippingCity ? 3 : account ? 2 : 1;
 
   async function connectWallet() {
     try {
@@ -128,175 +134,162 @@ export default function WatchStorePage() {
 
   return (
     <main className="watch-page">
-      <div className="commerce-announcement">
-        Private crypto checkout. Pay on Base with USDC. No Stripe, no card processor.
+      <div className="mk-top">
+        <a href="#checkout">Want to buy with crypto? Checkout with Base USDC.</a>
+        <nav>
+          <a href="#sell">Sell Now</a>
+          <a href="#stores">Find a Store</a>
+          <a href="#help">Help</a>
+          <a href="#journal">Blog</a>
+        </nav>
       </div>
 
-      <header className="watch-header">
-        <a className="watch-brand" href="#top"><span />OmniSignal</a>
-        <nav>
-          <a href="#product">Product</a>
-          <a href="#checkout">Checkout</a>
-          <a href="#delivery">Delivery</a>
-        </nav>
-        <button onClick={connectWallet}>{account ? shortAccount : "Connect Wallet"}</button>
+      <header className="mk-header">
+        <button className="mk-menu" aria-label="Open menu">Menu</button>
+        <a className="mk-logo" href="#top">OmniSignal</a>
+        <div className="mk-actions">
+          <button className="mk-search">Search for a brand, a model...</button>
+          <button className="mk-wallet" onClick={connectWallet}>{account ? shortAccount : "Connect Wallet"}</button>
+        </div>
       </header>
 
-      <section className="commerce-hero" id="top">
-        <div className="product-gallery" id="product">
-          <div className="gallery-main">
-            <img src={selectedImage} alt={PRODUCT_NAME} />
-            <span className="gallery-badge">Royal Pop / Eight White</span>
+      <nav className="mk-nav">
+        <a href="#sale">Summer Sale</a>
+        <a href="#new">New Releases</a>
+        <a href="#sneakers">Sneakers</a>
+        <a href="#bags">Bags</a>
+        <a href="#streetwear">Streetwear</a>
+        <a href="#accessories">Accessories</a>
+        <a href="#watches">Watches</a>
+        <a href="#collectibles">Collectibles</a>
+      </nav>
+
+      <section className="mk-product" id="top">
+        <div className="mk-gallery">
+          {PRODUCT_IMAGES.map((image, index) => (
+            <figure className={index === 0 ? "mk-photo large" : "mk-photo"} key={image}>
+              <img src={image} alt={`${PRODUCT_NAME} product view ${index + 1}`} />
+              {index === 0 && <span>New</span>}
+            </figure>
+          ))}
+        </div>
+
+        <aside className="mk-buybox">
+          <div className="mk-breadcrumb">Home / Accessories / Watches / Swatch x Audemars Piguet</div>
+          <h1>{PRODUCT_NAME}</h1>
+          <div className="mk-price">
+            <span>From</span>
+            <strong>AED {SELL_PRICE_AED.toLocaleString("en-US")}</strong>
           </div>
-          <div className="gallery-thumbs">
-            {PRODUCT_IMAGES.map((image, index) => (
-              <button
-                key={image}
-                className={selectedImage === image ? "active" : ""}
-                onClick={() => setSelectedImage(image)}
-                aria-label={`View product image ${index + 1}`}
-              >
-                <img src={image} alt="" />
+
+          <div className="mk-option-head">
+            <span>Option</span>
+            <b>Eight White</b>
+          </div>
+          <div className="mk-options">
+            {COLOR_OPTIONS.map((option) => (
+              <button className={option.active ? "active" : ""} key={option.name} title={option.name}>
+                <span style={{ background: option.color }} />
               </button>
             ))}
           </div>
-        </div>
 
-        <div className="buy-panel">
-          <div className="breadcrumb">Home / Watches / Crypto checkout</div>
-          <div className="product-badges">
-            <span>New release</span>
-            <span>Base USDC</span>
-            <span>MetaMask</span>
-          </div>
-          <h1>{PRODUCT_NAME}</h1>
-          <p className="product-intro">
-            A clean resale checkout for the white Royal Pop pocket watch. Pay from your wallet, keep
-            the on-chain receipt, and we confirm fulfillment against your contact details.
-          </p>
-
-          <div className="price-card">
-            <div>
-              <span>OmniSignal price</span>
-              <strong>AED {SELL_PRICE_AED.toLocaleString("en-US")}</strong>
-            </div>
-            <div>
-              <span>Crypto due</span>
-              <strong>{USDC_PRICE.toLocaleString("en-US", { maximumFractionDigits: 2 })} USDC</strong>
-            </div>
-            <p>Reference listing observed at AED {SOURCE_PRICE_AED.toLocaleString("en-US")}; this checkout is set at double that price.</p>
+          <div className="mk-paypanel" id="checkout">
+            <label>
+              Full name
+              <input value={buyerName} onChange={(event) => setBuyerName(event.target.value)} placeholder="Your name" />
+            </label>
+            <label>
+              WhatsApp or email
+              <input value={buyerContact} onChange={(event) => setBuyerContact(event.target.value)} placeholder="Contact for delivery" />
+            </label>
+            <label>
+              Delivery city
+              <input value={shippingCity} onChange={(event) => setShippingCity(event.target.value)} placeholder="Dubai, Abu Dhabi, Riyadh..." />
+            </label>
           </div>
 
-          <div className="buy-actions">
-            <a href="#checkout">Proceed to checkout</a>
-            <button onClick={connectWallet}>{account ? `Wallet ${shortAccount}` : "Connect MetaMask"}</button>
+          <button className="mk-add" onClick={payWithUsdc} disabled={busy}>
+            {busy ? "Opening MetaMask..." : "Pay with crypto"}
+          </button>
+          <button className="mk-connect" onClick={connectWallet}>
+            {account ? `Wallet ${shortAccount}` : "Connect MetaMask"}
+          </button>
+
+          <div className="mk-loyalty">OmniSignal checkout: {USDC_PRICE.toLocaleString("en-US", { maximumFractionDigits: 2 })} USDC on Base.</div>
+          <div className="mk-splitpay">No Stripe. No card processor. Buyer pays directly from wallet.</div>
+
+          <div className="mk-wallet-box">
+            <span>Receiving wallet</span>
+            <b>{TREASURY_ADDRESS}</b>
+            <button onClick={copyReceivingWallet}>Copy wallet</button>
           </div>
-
-          <div className="proof-grid">
-            <div><b>Network</b><span>Base mainnet</span></div>
-            <div><b>Token</b><span>USDC</span></div>
-            <div><b>Receipt</b><span>BaseScan transaction</span></div>
-          </div>
-        </div>
-      </section>
-
-      <section className="checkout-section" id="checkout">
-        <div className="checkout-left">
-          <div className="section-label">Secure crypto checkout</div>
-          <h2>Complete the order in four steps.</h2>
-          <div className="checkout-steps">
-            <Step number={1} label="Connect wallet" active={checkoutStage >= 1} complete={Boolean(account)} />
-            <Step number={2} label="Add delivery details" active={checkoutStage >= 2} complete={Boolean(buyerName && buyerContact && shippingCity)} />
-            <Step number={3} label="Approve USDC payment" active={checkoutStage >= 3} complete={Boolean(txHash)} />
-            <Step number={4} label="Keep on-chain receipt" active={checkoutStage >= 4} complete={Boolean(txHash)} />
-          </div>
-
-          <div className="checkout-card">
-            <div className="field-grid">
-              <label>
-                Full name
-                <input value={buyerName} onChange={(event) => setBuyerName(event.target.value)} placeholder="Your name" />
-              </label>
-              <label>
-                WhatsApp or email
-                <input value={buyerContact} onChange={(event) => setBuyerContact(event.target.value)} placeholder="Contact for delivery" />
-              </label>
-              <label>
-                Delivery city
-                <input value={shippingCity} onChange={(event) => setShippingCity(event.target.value)} placeholder="Dubai, Abu Dhabi, Riyadh..." />
-              </label>
-            </div>
-
-            <div className="wallet-box">
-              <div>
-                <span>Receiving wallet</span>
-                <b>{TREASURY_ADDRESS}</b>
-              </div>
-              <button onClick={copyReceivingWallet}>Copy</button>
-            </div>
-
-            <div className="checkout-buttons">
-              <button className="ghost-button" onClick={connectWallet}>{account ? `Wallet ${shortAccount}` : "Connect MetaMask"}</button>
-              <button className="pay-button" onClick={payWithUsdc} disabled={busy}>{busy ? "Opening wallet..." : "Pay with Base USDC"}</button>
-            </div>
-            {status && <p className="checkout-status">{status}</p>}
-            {txHash && (
-              <a className="tx-link" href={`${BASE_EXPLORER}/tx/${txHash}`} target="_blank" rel="noreferrer">
-                View transaction receipt
-              </a>
-            )}
-          </div>
-        </div>
-
-        <aside className="order-summary">
-          <h3>Order summary</h3>
-          <div className="summary-product">
-            <img src={PRODUCT_IMAGES[0]} alt="" />
-            <div>
-              <b>Eight White Royal Pop</b>
-              <span>Qty 1 / Independent resale listing</span>
-            </div>
-          </div>
-          <SummaryRow label="Product price" value={`AED ${SELL_PRICE_AED.toLocaleString("en-US")}`} />
-          <SummaryRow label="Crypto amount" value={`${USDC_PRICE.toLocaleString("en-US", { maximumFractionDigits: 2 })} USDC`} />
-          <SummaryRow label="Network" value="Base" />
-          <SummaryRow label="Token contract" value={`${BASE_USDC.slice(0, 8)}...${BASE_USDC.slice(-6)}`} />
-          <p>Order is matched to the wallet transaction and the delivery contact entered above.</p>
+          {status && <p className="mk-status">{status}</p>}
+          {txHash && (
+            <a className="mk-receipt" href={`${BASE_EXPLORER}/tx/${txHash}`} target="_blank" rel="noreferrer">
+              View transaction receipt
+            </a>
+          )}
         </aside>
       </section>
 
-      <section className="delivery-grid" id="delivery">
+      <section className="mk-content">
         <article>
-          <span>01</span>
-          <h3>Wallet-native checkout</h3>
-          <p>The buyer pays with MetaMask on Base. The site never asks for a seed phrase or private key.</p>
+          <h2>Discover this product</h2>
+          <p>
+            The Royal Pop Pocket Watch "Eight White" brings a crisp white finish to a collectible
+            pocket watch format with Royal Oak inspired octagonal design elements.
+          </p>
+          <ul>
+            <li>Eight White colorway with clean pop inspired detailing</li>
+            <li>Royal Oak inspired octagonal design elements</li>
+            <li>Unique pocket watch format with collectible appeal</li>
+            <li>Crypto-only OmniSignal checkout on Base USDC</li>
+          </ul>
         </article>
-        <article>
-          <span>02</span>
-          <h3>On-chain proof</h3>
-          <p>The transaction hash is the receipt. Buyers can verify it directly on BaseScan.</p>
-        </article>
-        <article>
-          <span>03</span>
-          <h3>Manual fulfillment</h3>
-          <p>Delivery is confirmed after payment and buyer details are reviewed. No affiliation with Swatch or Audemars Piguet.</p>
-        </article>
+        <details open>
+          <summary>Authenticity</summary>
+          <p>Every order is reviewed before fulfillment. This is an independent resale listing.</p>
+        </details>
+        <details>
+          <summary>Shipping and returns</summary>
+          <p>Delivery is confirmed after the on-chain payment and buyer contact details are matched.</p>
+        </details>
+        <details>
+          <summary>Payment methods</summary>
+          <p>MetaMask, Base mainnet, and USDC. The site never asks for seed phrases or private keys.</p>
+        </details>
       </section>
+
+      <section className="mk-newsletter">
+        <div>
+          <h2>Do not miss out on the latest.</h2>
+          <p>Get first access to new watch drops, crypto checkout releases, and private listings.</p>
+        </div>
+        <form>
+          <input placeholder="Enter your email" />
+          <button type="button">Submit</button>
+        </form>
+      </section>
+
+      <footer className="mk-footer">
+        <div>
+          <h3>About OmniSignal</h3>
+          <p>Crypto-native checkout for collectible watches and rare pieces.</p>
+        </div>
+        <div>
+          <h3>Customer Care</h3>
+          <a href="#help">Shipping and delivery</a>
+          <a href="#help">FAQ</a>
+          <a href="#help">Contact us</a>
+        </div>
+        <div>
+          <h3>Payment</h3>
+          <p>Base USDC, MetaMask, on-chain receipt.</p>
+        </div>
+      </footer>
     </main>
   );
-}
-
-function Step({ number, label, active, complete }: { number: number; label: string; active: boolean; complete: boolean }) {
-  return (
-    <div className={`checkout-step ${active ? "active" : ""} ${complete ? "complete" : ""}`}>
-      <b>{complete ? "OK" : number}</b>
-      <span>{label}</span>
-    </div>
-  );
-}
-
-function SummaryRow({ label, value }: { label: string; value: string }) {
-  return <div className="summary-row"><span>{label}</span><b>{value}</b></div>;
 }
 
 function encodeUsdcTransfer(to: string, amount: bigint) {
