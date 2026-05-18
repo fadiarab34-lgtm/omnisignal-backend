@@ -1,193 +1,249 @@
-import Link from "next/link";
-import { MarketTape } from "../components/market-tape";
+"use client";
 
-export default function HomePage() {
+import { useMemo, useState } from "react";
+
+const PRODUCT_NAME = "Swatch x Audemars Piguet Royal Pop Pocket Watch Eight White";
+const SOURCE_PRICE_AED = 9700;
+const SELL_PRICE_AED = SOURCE_PRICE_AED * 2;
+const AED_USD_RATE = 3.6725;
+const USDC_PRICE = SELL_PRICE_AED / AED_USD_RATE;
+const USDC_UNITS = 5_282_510_000n;
+const BASE_CHAIN_ID = "0x2105";
+const BASE_CHAIN_NAME = "Base";
+const BASE_RPC_URL = "https://mainnet.base.org";
+const BASE_EXPLORER = "https://basescan.org";
+const BASE_USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+const TREASURY_ADDRESS = "0x839D8ADD3C28b6467813E4d0475801AB7d432C53";
+const PRODUCT_IMAGE =
+  "https://cdn.shopify.com/s/files/1/0640/3846/9846/files/Swatch_Audemars_Piguet_Royal_Pop_Collection_Pocket_Watch_Huit_Blanc_1_webp.png?quality=75&v=1778746913%3Fwidth%3D3840";
+
+export default function WatchStorePage() {
+  const [account, setAccount] = useState("");
+  const [buyerName, setBuyerName] = useState("");
+  const [buyerContact, setBuyerContact] = useState("");
+  const [shippingCity, setShippingCity] = useState("");
+  const [status, setStatus] = useState("");
+  const [txHash, setTxHash] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const shortAccount = useMemo(() => {
+    if (!account) return "";
+    return `${account.slice(0, 6)}...${account.slice(-4)}`;
+  }, [account]);
+
+  async function connectWallet() {
+    try {
+      setStatus("");
+      if (!window.ethereum) {
+        setStatus("MetaMask is not installed. Install MetaMask, add Base, then return to checkout.");
+        return;
+      }
+      const accounts = (await window.ethereum.request({ method: "eth_requestAccounts" })) as string[];
+      setAccount(accounts[0] ?? "");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Wallet connection was rejected.");
+    }
+  }
+
+  async function switchToBase() {
+    if (!window.ethereum) throw new Error("MetaMask is not installed.");
+    try {
+      await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: BASE_CHAIN_ID }] });
+    } catch (error) {
+      const code = typeof error === "object" && error && "code" in error ? (error as { code?: number }).code : undefined;
+      if (code !== 4902) throw error;
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [{
+          chainId: BASE_CHAIN_ID,
+          chainName: BASE_CHAIN_NAME,
+          nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+          rpcUrls: [BASE_RPC_URL],
+          blockExplorerUrls: [BASE_EXPLORER]
+        }]
+      });
+    }
+  }
+
+  async function payWithUsdc() {
+    try {
+      setBusy(true);
+      setStatus("");
+      setTxHash("");
+      if (!buyerName.trim() || !buyerContact.trim() || !shippingCity.trim()) {
+        setStatus("Add your name, contact, and delivery city before sending payment.");
+        return;
+      }
+      if (!window.ethereum) {
+        setStatus("MetaMask is required for crypto checkout.");
+        return;
+      }
+      let from = account;
+      if (!from) {
+        const accounts = (await window.ethereum.request({ method: "eth_requestAccounts" })) as string[];
+        from = accounts[0] ?? "";
+        setAccount(from);
+      }
+      if (!from) throw new Error("No wallet selected.");
+      await switchToBase();
+      const hash = (await window.ethereum.request({
+        method: "eth_sendTransaction",
+        params: [{
+          from,
+          to: BASE_USDC,
+          value: "0x0",
+          data: encodeUsdcTransfer(TREASURY_ADDRESS, USDC_UNITS)
+        }]
+      })) as string;
+      setTxHash(hash);
+      setStatus("Payment sent. Keep the transaction hash as your receipt while the order is confirmed on-chain.");
+      window.localStorage.setItem("omnisignal-watch-order", JSON.stringify({
+        product: PRODUCT_NAME,
+        buyerName,
+        buyerContact,
+        shippingCity,
+        wallet: from,
+        txHash: hash,
+        amountAed: SELL_PRICE_AED,
+        amountUsdc: Number(USDC_PRICE.toFixed(2)),
+        createdAt: new Date().toISOString()
+      }));
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Payment was not completed.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
-    <div className="page-shell landing landing-prototype">
-      <header className="landing-header">
-        <Link href="/" className="brand"><span className="brand-dot" />OmniSignal</Link>
-        <nav className="landing-nav">
-          <a href="#signals">Oracle</a>
-          <a href="#geo">Geo Risk</a>
-          <a href="#wallet">MetaMask</a>
-          <a href="#pricing">Pricing</a>
+    <main className="watch-page">
+      <header className="watch-header">
+        <a className="watch-brand" href="#top"><span />OmniSignal</a>
+        <nav>
+          <a href="#watch">Watch</a>
+          <a href="#checkout">Crypto checkout</a>
+          <a href="#details">Details</a>
         </nav>
-        <Link href="/portal/intelligence" className="cta">Open Oracle</Link>
+        <button onClick={connectWallet}>{account ? shortAccount : "Connect Wallet"}</button>
       </header>
-      <main>
-        <section className="hero prototype-hero">
-          <div className="hero-canvas" />
-          <div className="hero-visual" aria-hidden="true">
-            <div className="signal-earth">
-              <span className="earth-signal earth-signal-a" />
-              <span className="earth-signal earth-signal-b" />
-              <span className="earth-signal earth-signal-c" />
-              <span className="earth-orbit earth-orbit-a" />
-              <span className="earth-orbit earth-orbit-b" />
-              <span className="earth-pulse earth-pulse-a" />
-              <span className="earth-pulse earth-pulse-b" />
-              <span className="earth-pulse earth-pulse-c" />
-            </div>
-          </div>
-          <div className="hero-content">
-            <span className="eyebrow"><span className="live-dot" />AI geopolitical market intelligence cockpit</span>
-            <h1>Know what matters <span>before markets fully react.</span></h1>
-            <p>
-              OmniSignal reads global news, leader statements, social velocity, prediction-market divergence,
-              macro pressure, live market movement, and wallet exposure through one AI Oracle Pool.
-            </p>
-            <div className="hero-actions">
-              <Link href="/portal/intelligence" className="primary-btn">Open AI Oracle</Link>
-              <Link href="/portal/portfolio" className="secondary-btn">Connect Portfolio</Link>
-              <a href="#signals" className="secondary-btn">Signal Stack</a>
-            </div>
-            <div className="hero-metrics">
-              <div><b>Oracle</b><span>Ranks real-world catalysts</span></div>
-              <div><b>Geo Risk</b><span>Maps events to assets</span></div>
-              <div><b>PolyDelta</b><span>Flags probability gaps</span></div>
-            </div>
-            <div className="trust-strip">
-              <span>No invented intelligence cards</span>
-              <span>Real provider or unavailable state</span>
-              <span>Simulation before execution</span>
-            </div>
-          </div>
-        </section>
 
-        <section className="landing-band dark">
-          <MarketTape />
-        </section>
+      <section className="watch-hero" id="top">
+        <div className="watch-copy">
+          <p className="watch-kicker">Crypto-only private checkout</p>
+          <h1>Eight White Royal Pop, sold through OmniSignal.</h1>
+          <p>
+            A one-page purchase experience for the Swatch x Audemars Piguet Royal Pop Pocket Watch
+            "Eight White". Pay directly from MetaMask in Base USDC.
+          </p>
+          <div className="watch-price-line">
+            <div>
+              <span>Price</span>
+              <strong>AED {SELL_PRICE_AED.toLocaleString("en-US")}</strong>
+            </div>
+            <div>
+              <span>Crypto checkout</span>
+              <strong>{USDC_PRICE.toLocaleString("en-US", { maximumFractionDigits: 2 })} USDC</strong>
+            </div>
+          </div>
+          <div className="watch-actions">
+            <a href="#checkout">Buy with crypto</a>
+            <a href="#details">View details</a>
+          </div>
+        </div>
 
-        <section className="landing-band money-section" id="signals">
-          <div className="money-layout">
-            <div className="money-copy">
-              <div className="section-badge">AI Oracle Pool</div>
-              <h2>From world event to first-mover signal.</h2>
-              <p>
-                The Oracle Pool takes fresh signals from compliant providers, normalizes them, deduplicates
-                related stories, scores urgency, and turns market-moving events into actionable intelligence cards.
-              </p>
-              <div className="money-kpis">
-                <div><b>Detect</b><span>News, leaders, social, macro</span></div>
-                <div><b>Interpret</b><span>Why it matters and who is exposed</span></div>
-                <div><b>Act</b><span>Watch, hedge, simulate, approve</span></div>
-              </div>
-              <div className="money-actions">
-                <Link className="primary-btn" href="/portal/intelligence">Open Oracle Cockpit</Link>
-                <Link className="secondary-btn" href="/portal/settings">Provider Status</Link>
-              </div>
-            </div>
-            <div className="stack-grid compact">
-              <div className="stack-card"><div className="stack-kicker">01 - Leader Posts</div><h3>Statement analysis</h3><p>Configured X or compliant leader-feed providers are interpreted for tone, urgency, affected countries, sectors, and assets.</p></div>
-              <div className="stack-card"><div className="stack-kicker">02 - Geo Risk</div><h3>Market mapping</h3><p>Conflict, sanctions, elections, export controls, central-bank language, and energy disruptions are mapped to tradable exposure.</p></div>
-              <div className="stack-card"><div className="stack-kicker">03 - Herd Signal</div><h3>Crowd behavior</h3><p>Social velocity and narrative acceleration are scored for hype, panic, crowding risk, and contrarian opportunities when configured.</p></div>
-              <div className="stack-card"><div className="stack-kicker">04 - PolyDelta</div><h3>Probability divergence</h3><p>Prediction-market probabilities can be compared with asset movement to flag when markets may not be pricing an event fully.</p></div>
-            </div>
+        <div className="watch-product-card" id="watch">
+          <div className="watch-image-shell">
+            <img src={PRODUCT_IMAGE} alt={PRODUCT_NAME} />
           </div>
-        </section>
+          <div className="watch-card-meta">
+            <span>New release</span>
+            <h2>{PRODUCT_NAME}</h2>
+            <p>White colorway, pocket watch format, Royal Oak inspired octagonal design language.</p>
+          </div>
+        </div>
+      </section>
 
-        <section className="landing-band wallet-section" id="geo">
-          <div className="wallet-layout">
-            <div className="wallet-copy">
-              <div className="section-badge">Geo Risk Monitor</div>
-              <h2>Political risk translated into market exposure.</h2>
-              <p>
-                OmniSignal is built to explain how global events touch oil, gold, defense, semiconductors,
-                currencies, crypto, shipping, airlines, banks, and user portfolios.
-              </p>
-              <p>
-                Each Oracle card separates the majority report from the contrarian view, so the platform does
-                not merely repeat headlines or follow the crowd.
-              </p>
-              <div className="wallet-actions">
-                <Link href="/portal/intelligence">View Geo Risk</Link>
-                <Link href="/portal/intelligence">Majority vs Contrarian</Link>
-              </div>
-            </div>
-            <div className="wallet-steps">
-              <div><b>1</b><h3>What happened?</h3><p>Fresh events are normalized into one signal model with sources, timestamps, entities, and credibility.</p></div>
-              <div><b>2</b><h3>Why it matters</h3><p>The Oracle scores urgency, confidence, market impact, geopolitical risk, and crowding or divergence where available.</p></div>
-              <div><b>3</b><h3>Who is exposed?</h3><p>Countries, sectors, assets, watchlists, and verified wallet portfolios are connected to the same intelligence card.</p></div>
-              <div><b>4</b><h3>What next?</h3><p>The user can watch, hedge, simulate, approve a proposal, or prepare a trade ticket without voice-only execution.</p></div>
-            </div>
-          </div>
-        </section>
+      <section className="watch-strip">
+        <span>Base USDC</span>
+        <span>No Stripe</span>
+        <span>MetaMask checkout</span>
+        <span>On-chain receipt</span>
+        <span>Authenticity checked before delivery</span>
+      </section>
 
-        <section className="landing-band wallet-section" id="wallet">
-          <div className="wallet-layout">
-            <div className="wallet-copy">
-              <div className="section-badge">Portfolio Intelligence</div>
-              <h2>Your portfolio appears only after wallet verification.</h2>
-              <p>
-                OmniSignal verifies wallet ownership with a signed nonce. It never asks for a seed phrase
-                and never stores private keys.
-              </p>
-              <p>
-                Once connected, Oracle cards can say why an event matters to your holdings, what exposure changed,
-                and which simulation should be reviewed before any approval.
-              </p>
-              <div className="wallet-actions">
-                <Link href="/portal/portfolio">Connect Wallet</Link>
-                <Link href="/portal/settings">Premium Status</Link>
-              </div>
-            </div>
-            <div className="wallet-steps">
-              <div><b>1</b><h3>Connect MetaMask</h3><p>The browser requests the account through the real EIP-1193 provider.</p></div>
-              <div><b>2</b><h3>Sign nonce</h3><p>The backend verifies the signature and creates a secure wallet session.</p></div>
-              <div><b>3</b><h3>Create portfolio</h3><p>New portfolios are database records owned by the verified wallet.</p></div>
-              <div><b>4</b><h3>Simulate or ticket</h3><p>Simulations use live prices. Trading uses backend order intents.</p></div>
-            </div>
+      <section className="watch-checkout-grid" id="checkout">
+        <div className="checkout-card">
+          <p className="watch-kicker">Checkout</p>
+          <h2>Pay with MetaMask</h2>
+          <p className="checkout-note">
+            The payment sends {USDC_PRICE.toLocaleString("en-US", { maximumFractionDigits: 2 })} USDC on Base
+            to the OmniSignal receiving wallet.
+          </p>
+          <div className="field-grid">
+            <label>
+              Full name
+              <input value={buyerName} onChange={(event) => setBuyerName(event.target.value)} placeholder="Your name" />
+            </label>
+            <label>
+              WhatsApp or email
+              <input value={buyerContact} onChange={(event) => setBuyerContact(event.target.value)} placeholder="Contact for delivery" />
+            </label>
+            <label>
+              Delivery city
+              <input value={shippingCity} onChange={(event) => setShippingCity(event.target.value)} placeholder="Dubai, Abu Dhabi, Riyadh..." />
+            </label>
           </div>
-        </section>
+          <div className="checkout-buttons">
+            <button className="ghost-button" onClick={connectWallet}>{account ? `Wallet ${shortAccount}` : "Connect MetaMask"}</button>
+            <button className="pay-button" onClick={payWithUsdc} disabled={busy}>{busy ? "Opening wallet..." : "Pay with Base USDC"}</button>
+          </div>
+          {status && <p className="checkout-status">{status}</p>}
+          {txHash && (
+            <a className="tx-link" href={`${BASE_EXPLORER}/tx/${txHash}`} target="_blank" rel="noreferrer">
+              View transaction receipt
+            </a>
+          )}
+        </div>
 
-        <section className="landing-band pricing-section" id="pricing">
-          <div className="section-center">
-            <div className="section-badge">Pricing</div>
-            <h2>Start free. Unlock deeper intelligence by wallet.</h2>
-            <p>Premium payments go from MetaMask to the OmniSignal treasury wallet, then the backend verifies the on-chain transfer and unlocks the paying wallet.</p>
-          </div>
-          <div className="pricing-grid">
-            <div className="plan">
-              <div className="plan-name">Freemium</div>
-              <div className="plan-price">$0 <span>/ month</span></div>
-              <p className="plan-desc">For trying the Oracle with strict limits and visible provider health.</p>
-              <ul>
-                <li>1 portfolio</li>
-                <li>Limited Oracle nudges</li>
-                <li>Provider-backed market data when configured</li>
-                <li>Wallet verification required</li>
-              </ul>
-              <Link href="/portal" className="plan-btn secondary-btn">Get Started Free</Link>
-            </div>
-            <div className="plan highlighted">
-              <div className="plan-badge">Wallet Premium</div>
-              <div className="plan-name">Premium</div>
-              <div className="plan-price">$25 <span>/ month</span></div>
-              <p className="plan-desc">Unlocks the active OmniSignal intelligence layer for the paying wallet.</p>
-              <ul>
-                <li>More saved portfolios</li>
-                <li>More AI Oracle nudges</li>
-                <li>More live intelligence updates</li>
-                <li>Telegram or WhatsApp AI link when configured</li>
-                <li>On-chain payment verification</li>
-              </ul>
-              <Link href="/portal/settings" className="plan-btn primary-btn">Start Premium</Link>
-            </div>
-          </div>
-        </section>
+        <aside className="order-summary">
+          <h3>Order summary</h3>
+          <div><span>Product</span><b>Eight White Royal Pop</b></div>
+          <div><span>Source reference</span><b>AED {SOURCE_PRICE_AED.toLocaleString("en-US")}</b></div>
+          <div><span>OmniSignal price</span><b>AED {SELL_PRICE_AED.toLocaleString("en-US")}</b></div>
+          <div><span>Network</span><b>Base</b></div>
+          <div><span>Token</span><b>USDC</b></div>
+          <div><span>Receiving wallet</span><b>{TREASURY_ADDRESS.slice(0, 8)}...{TREASURY_ADDRESS.slice(-6)}</b></div>
+          <p>
+            Delivery is confirmed after the Base transaction is visible on-chain and the buyer contact details
+            are matched to the receipt.
+          </p>
+        </aside>
+      </section>
 
-        <section className="landing-band contact-section" id="contact">
-          <div className="section-center">
-            <div className="section-badge">Command Center</div>
-            <h2>Open the intelligence cockpit.</h2>
-            <p>Connect compliant providers in the backend environment to activate real news, leader posts, prediction markets, social velocity, AI Oracle cards, voice, and portfolio exposure.</p>
-            <div className="hero-actions">
-              <Link href="/portal/intelligence" className="primary-btn">Open AI Oracle</Link>
-              <Link href="/portal/settings" className="secondary-btn">View Status</Link>
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
+      <section className="watch-details" id="details">
+        <article>
+          <span>Product</span>
+          <h3>Eight White pocket watch</h3>
+          <p>Clean white finish, collectible Royal Pop format, and octagonal Royal Oak inspired design elements.</p>
+        </article>
+        <article>
+          <span>Payment</span>
+          <h3>Crypto only</h3>
+          <p>MetaMask sends Base USDC directly to the receiving wallet. No card checkout and no Stripe flow.</p>
+        </article>
+        <article>
+          <span>Resale note</span>
+          <h3>Independent listing</h3>
+          <p>OmniSignal is not affiliated with Swatch or Audemars Piguet. Brand names identify the resale item.</p>
+        </article>
+      </section>
+    </main>
   );
+}
+
+function encodeUsdcTransfer(to: string, amount: bigint) {
+  const method = "a9059cbb";
+  const address = to.toLowerCase().replace(/^0x/, "").padStart(64, "0");
+  const value = amount.toString(16).padStart(64, "0");
+  return `0x${method}${address}${value}`;
 }
